@@ -57,7 +57,7 @@ class Tx_Fluidcontent_UserFunction_ContentFieldSuppressor {
 		$paths = $configurationService->getContentConfiguration($extensionName);
 		$templatePathAndFilename = $paths['templateRootPath'] . $filename;
 		$values = $flexformService->convertFlexFormContentToArray($record['pi_flexform']);
-		$config = $flexformService->getFlexFormConfigurationFromFile($templatePathAndFilename, $values, 'Configuration', $paths);
+		$config = $flexformService->getFlexFormConfigurationFromFile($templatePathAndFilename, $values, 'Configuration', $paths, $extensionName);
 		$values = $flexformService->convertFlexFormContentToArray($record['pi_flexform'], $config);
 		if (TRUE === in_array($field, $config['hidefields'])) {
 			return;
