@@ -81,12 +81,12 @@ class Tx_Fluidcontent_Controller_ContentController extends Tx_Extbase_MVC_Contro
 		$view->setPartialRootPath($paths['partialRootPath']);
 		$view->setTemplatePathAndFilename($absolutePath);
 		$view->setControllerContext($this->controllerContext);
-		$config = $this->configurationService->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', 'Configuration', $paths, $extensionName);
-		$variables = $this->configurationService->convertFlexFormContentToArray($this->configurationManager->getContentObject()->data['pi_flexform'], $config);
+		$config = $this->configurationService->getStoredVariable($this->view->getTemplatePathAndFilename(), 'storage', 'Configuration', $paths, $extensionName);
+		$variables = $this->configurationService->convertFlexFormContentToArray($cObj->data['pi_flexform'], $config);
 		$variables['page'] = $GLOBALS['TSFE']->page;
 		$variables['record'] = $cObj->data;
 		$variables['contentObject'] = $cObj;
-		$variables['settings'] = $this->settings;
+		$variables['settings'] = $variables;
 		$view->assignMultiple($variables);
 		return $view->render();
 	}
