@@ -38,24 +38,11 @@ class Tx_Fluidcontent_Controller_ContentController extends Tx_Extbase_MVC_Contro
 	protected $configurationService;
 
 	/**
-	 * @var Tx_Flux_Service_FlexForm
-	 */
-	protected $flexFormService;
-
-	/**
 	 * @param Tx_Fluidcontent_Service_ConfigurationService $configurationService
 	 * @return void
 	 */
 	public function injectConfigurationService(Tx_Fluidcontent_Service_ConfigurationService $configurationService) {
 		$this->configurationService = $configurationService;
-	}
-
-	/**
-	 * @param Tx_Flux_Service_FlexForm $flexformService
-	 * @return void
-	 */
-	public function injectFlexFormService(Tx_Flux_Service_FlexForm $flexFormService) {
-		$this->flexFormService = $flexFormService;
 	}
 
 	/**
