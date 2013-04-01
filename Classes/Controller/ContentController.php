@@ -66,11 +66,9 @@ class Tx_Fluidcontent_Controller_ContentController extends Tx_Extbase_MVC_Contro
 	public function renderAction() {
 		/** @var $view Tx_Flux_MVC_View_ExposedTemplateView */
 		$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedTemplateView');
-		$cObj = $this->configurationManager->getContentObject();
 		if (isset($cObj->data['tx_fed_fcefile']) === FALSE) {
 			return 'Fluid Content type not selected';
 		}
-		$this->flexFormService->setContentObjectData($cObj->data);
 		list ($extensionName, $filename) = explode(':', $cObj->data['tx_fed_fcefile']);
 		if (empty($extensionName) || empty($filename)) {
 			return 'Invalid Fluid Content type definition! The specified type is an empty value.';
@@ -95,8 +93,8 @@ class Tx_Fluidcontent_Controller_ContentController extends Tx_Extbase_MVC_Contro
 		$view->setPartialRootPath($paths['partialRootPath']);
 		$view->setTemplatePathAndFilename($absolutePath);
 		$view->setControllerContext($this->controllerContext);
-		$config = $view->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', 'Configuration');
-		$variables = $this->flexFormService->getAllAndTransform($config['fields']);
+		$config = $this->configurationService->getStoredVariable('Tx_Flux_ViewHelpers_FlexformViewHelper', 'storage', 'Configuration', $paths, $extensionName);
+		$variables = $this->configurationService->convertFlexFormContentToArray($this->configurationManager->getContentObject()->data['pi_flexform'], $config);
 		$variables['page'] = $GLOBALS['TSFE']->page;
 		$variables['record'] = $cObj->data;
 		$variables['contentObject'] = $cObj;
