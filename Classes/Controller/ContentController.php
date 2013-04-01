@@ -53,6 +53,7 @@ class Tx_Fluidcontent_Controller_ContentController extends Tx_Extbase_MVC_Contro
 	public function renderAction() {
 		/** @var $view Tx_Flux_MVC_View_ExposedTemplateView */
 		$view = $this->objectManager->create('Tx_Flux_MVC_View_ExposedTemplateView');
+		$cObj = $this->configurationManager->getContentObject();
 		if (isset($cObj->data['tx_fed_fcefile']) === FALSE) {
 			return 'Fluid Content type not selected';
 		}
