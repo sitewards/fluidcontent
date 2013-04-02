@@ -97,7 +97,14 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 		if ($paths === NULL) {
 			return NULL;
 		}
-		$templatePathAndFilename = $paths['templateRootPath'] . $filename;
+		$templateRootPath = $paths['templateRootPath'];
+		if ('/' === substr($templateRootPath, -1)) {
+			$templateRootPath = substr($templateRootPath, 0, -1);
+		}
+		if (TRUE === file_exists($templateRootPath . '/Content')) {
+			$templateRootPath = $templateRootPath . '/Content';
+		}
+		$templatePathAndFilename = $templateRootPath . '/' . $filename;
 		return $templatePathAndFilename;
 	}
 
@@ -114,7 +121,7 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 		}
 		$extensionKey = (TRUE === isset($paths['extensionKey']) ? $paths['extensionKey'] : $this->getExtensionKey($row));
 		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$templatePathAndFilename = $paths['templateRootPath'] . $filename;
+		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
 		return $this->configurationService->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', $paths, $extensionName);
 	}
 
