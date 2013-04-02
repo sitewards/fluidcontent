@@ -174,9 +174,11 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 	 * @return string
 	 */
 	public function getControllerExtensionKeyFromRecord(array $row) {
-		$identifier = explode(':', $row['tx_fed_fcefile']);
-		$actionName = array_pop($identifier);
-		return $actionName;
+		$fileReference = $this->getControllerActionReferenceFromRecord($row);
+		$identifier = explode(':', $fileReference);
+		$extensionName = array_shift($identifier);
+		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+		return $extensionKey;
 	}
 
 	/**
@@ -184,11 +186,21 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 	 * @return string
 	 */
 	public function getControllerActionFromRecord(array $row) {
-		$identifier = explode(':', $row['tx_fed_fcefile']);
-		$extensionName = array_shift($identifier);
-		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
-		return $extensionKey;
+		$fileReference = $this->getControllerActionReferenceFromRecord($row);
+		$identifier = explode(':', $fileReference);
+		$actionName = array_pop($identifier);
+		$actionName = basename($actionName, '.html');
+		$actionName{0} = strtolower($actionName{0});
+		return $actionName;
 	}
 
+	/**
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerActionReferenceFromRecord(array $row) {
+		$fileReference = $row['tx_fed_fcefile'];
+		return $fileReference;
+	}
 
 }
