@@ -162,4 +162,26 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 		return parent::getExtensionKey($row);
 	}
 
+	/**
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerExtensionKeyFromRecord(array $row) {
+		$identifier = explode(':', $row['tx_fed_fcefile']);
+		$actionName = array_pop($identifier);
+		return $actionName;
+	}
+
+	/**
+	 * @param array $row
+	 * @return string
+	 */
+	public function getControllerActionFromRecord(array $row) {
+		$identifier = explode(':', $row['tx_fed_fcefile']);
+		$extensionName = array_shift($identifier);
+		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+		return $extensionKey;
+	}
+
+
 }
