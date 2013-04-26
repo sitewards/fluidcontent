@@ -14,5 +14,3 @@ class ext_update {
 		return count($rows) . " rows has been updated";
 	}
 }
-
-?>
