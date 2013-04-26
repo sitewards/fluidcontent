@@ -139,6 +139,7 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 	/**
 	 * Perform various cleanup operations upon clearing cache
 	 *
+	 * @param array $command
 	 * @return void
 	 */
 	public function clearCacheCommand($command = array()) {
