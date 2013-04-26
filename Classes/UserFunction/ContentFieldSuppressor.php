@@ -47,6 +47,7 @@ class Tx_Fluidcontent_UserFunction_ContentFieldSuppressor {
 		if ('fluidcontent_content' !== $record['CType']) {
 			return;
 		}
+		unset($content);
 		/** @var $objectManager Tx_Extbase_Object_ObjectManager */
 		$objectManager = t3lib_div::makeInstance('Tx_Extbase_Object_ObjectManager');
 		/** @var $flexformService Tx_Flux_Service_FluxService */
@@ -58,7 +59,6 @@ class Tx_Fluidcontent_UserFunction_ContentFieldSuppressor {
 		$templatePathAndFilename = $paths['templateRootPath'] . $filename;
 		$values = $flexformService->convertFlexFormContentToArray($record['pi_flexform']);
 		$config = $flexformService->getFlexFormConfigurationFromFile($templatePathAndFilename, $values, 'Configuration', $paths, $extensionName);
-		$values = $flexformService->convertFlexFormContentToArray($record['pi_flexform'], $config);
 		if (TRUE === in_array($field, $config['hidefields'])) {
 			return;
 		}
