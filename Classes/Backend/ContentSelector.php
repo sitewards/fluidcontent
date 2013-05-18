@@ -51,7 +51,7 @@ class Tx_Fluidcontent_Backend_ContentSelector {
 		$name = $parameters['itemFormElName'];
 		$value = $parameters['itemFormElValue'];
 		$select = '<div><select name="' . htmlspecialchars($name) . '"  class="formField select" onchange="if (confirm(TBE_EDITOR.labels.onChangeAlert) && TBE_EDITOR.checkSubmit(-1)){ TBE_EDITOR.submitForm() };">' . LF;
-		$select .= '<option value="">' . $GLOBALS['LANG']->sL('LLL:EXT:fluidcontent/Resources/Private/Language/locallang_db.xml:tt_content.tx_fed_fcefile', TRUE) . '</option>' . LF;
+		$select .= '<option value="">' . $GLOBALS['LANG']->sL('LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile', TRUE) . '</option>' . LF;
 		foreach ($setup as $groupLabel => $configuration) {
 			$select .= '<optgroup label="' . htmlspecialchars($groupLabel) . '">' . LF;
 			foreach ($configuration['elements'] as $elementConfiguration) {
