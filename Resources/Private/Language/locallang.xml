@@ -12,6 +12,7 @@
             <label index="pages.tab.content_settings">Content settings</label>
             <label index="pages.tab.element_type">Element type</label>
             <label index="pages.tab.configuration">Configuration</label>
+			<label index="pages.no_content_types">No available content types</label>
 		</languageKey>
         <languageKey index="de" type="array">
 			<label index="tt_content.tx_fed_fcecontentarea">Content area</label>
@@ -20,6 +21,7 @@
             <label index="pages.tab.content_settings">Content Einstellungen</label>
             <label index="pages.tab.element_type">Elementtyp</label>
             <label index="pages.tab.configuration">Konfiguration</label>
+	        <label index="pages.no_content_types">Keine Inhaltstypen verfügbar</label>
         </languageKey>
 	</data>
 </T3locallang>

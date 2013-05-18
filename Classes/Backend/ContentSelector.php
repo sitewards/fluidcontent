@@ -47,6 +47,9 @@ class Tx_Fluidcontent_Backend_ContentSelector {
 		$conditions->getPageId(t3lib_div::_GET('id'));
 		$tsParser->parse($pageTypoScript, $conditions);
 		$setup = $tsParser->setup['mod.']['wizards.']['newContentElement.']['wizardItems.'];
+		if (FALSE === is_array($tsParser->setup['mod.']['wizards.']['newContentElement.']['wizardItems.'])) {
+			return Tx_Extbase_Utility_Localization::translate('pages.no_content_types', 'Fluidcontent');
+		}
 		$setup = t3lib_div::removeDotsFromTS($setup);
 		$name = $parameters['itemFormElName'];
 		$value = $parameters['itemFormElValue'];
