@@ -1,12 +1,12 @@
-TYPO3 extension Fluidcontent: Fluid Content Elements
-====================================================
+Fluidcontent: Fluid Content Elements
+====================================
 
-## What is it?
+> **Fluid Content** enables the use of special content elements, each based on a Fluid template - much like TemplaVoila's flexible
+> content elements. The feature was born in the extension FED and ported into this extension, making a very light extension with
+> a simple, highly specific purpose. It uses Flux to enable highly dynamic configuration of variables used when rendering the
+> template.
 
-**Fluid Content** enables the use of special content elements, each based on a Fluid template - much like TemplaVoila's flexible
-content elements. The feature was born in the extension FED and ported into this extension, making a very light extension with
-a simple, highly specific purpose. It uses Flux to enable highly dynamic configuration of variables used when rendering the
-template.
+[![Build Status](https://travis-ci.org/FluidTYPO3/fluidcontent.png?branch=master)](https://travis-ci.org/FluidTYPO3/fluidcontent)
 
 ## What does it do?
 
