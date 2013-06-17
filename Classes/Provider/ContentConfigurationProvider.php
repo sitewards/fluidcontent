@@ -118,6 +118,7 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 				}
 			}
 		}
+		$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
 		return $templatePathAndFilename;
 	}
 
