@@ -8,6 +8,14 @@ Fluidcontent: Fluid Content Elements
 
 [![Build Status](https://travis-ci.org/FluidTYPO3/fluidcontent.png?branch=master)](https://travis-ci.org/FluidTYPO3/fluidcontent)
 
+## Code Quality
+
+![Abstraction Instability Chart](Documentation/ComplexityChart.png)
+![Inheritance and dependency risk](Documentation/PyramidChart.png)
+
+_Understanding the [Abstraction Instability Chart](http://pdepend.org/documentation/handbook/reports/abstraction-instability-chart.html)
+and [Pyramid Chart](http://pdepend.org/documentation/handbook/reports/overview-pyramid.html)._
+
 ## What does it do?
 
 EXT:fluidcontent lets you write custom content elements based on Fluid templates. Each content element and its possible settings
