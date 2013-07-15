@@ -105,12 +105,18 @@ class Tx_Fluidcontent_Service_ConfigurationService extends Tx_Flux_Service_FluxS
 			if (FALSE === $collection) {
 				continue;
 			}
-			$wizardTabs = $this->buildAllWizardTabGroups($collection);
-			$collectionPageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
-			$pageTsConfig .= '[PIDinRootline = ' . strval($pageUid) . ']' . LF;
-			$pageTsConfig .= $collectionPageTsConfig . LF;
-			$pageTsConfig .= '[GLOBAL]' . LF;
+			try {
+				$wizardTabs = $this->buildAllWizardTabGroups($collection);
+				$collectionPageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
+				$pageTsConfig .= '[PIDinRootline = ' . strval($pageUid) . ']' . LF;
+				$pageTsConfig .= $collectionPageTsConfig . LF;
+				$pageTsConfig .= '[GLOBAL]' . LF;
+				$this->message('Built content setup for page ' . $pageUid, t3lib_div::SYSLOG_SEVERITY_INFO, 'Fluidcontent');
+			} catch (Exception $error) {
+				$this->debug($error);
+			}
 		}
+		$this->message('Wrote ' . strlen($pageTsConfig) . ' bytes of page TS configuration', t3lib_div::SYSLOG_SEVERITY_INFO);
 		t3lib_div::writeFile(FLUIDCONTENT_TEMPFILE, $pageTsConfig);
 		return;
 	}
