@@ -31,7 +31,7 @@ if ('BE' === TYPO3_MODE) {
 	/** @var \TYPO3\CMS\Core\Cache\CacheManager $cacheManager */
 	$cacheManager = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('TYPO3\CMS\Core\Cache\CacheManager');
 
-	if (TRUE === $cacheManager->getCache('fluidcontent')->has('pageTsConfig')) {
+	if (TRUE === $cacheManager->hasCache('fluidcontent') && TRUE === $cacheManager->getCache('fluidcontent')->has('pageTsConfig')) {
 		\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPageTSConfig($cacheManager->getCache('fluidcontent')->get('pageTsConfig'));
 	}
 	unset($cacheManager);
