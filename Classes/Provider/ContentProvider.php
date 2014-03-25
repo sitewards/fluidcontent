@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Fluidcontent\Provider;
 /*****************************************************************
  *  Copyright notice
  *
- *  (c) 2012 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,14 +24,27 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  *****************************************************************/
 
+use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
+use FluidTYPO3\Flux\Provider\ContentProvider as FluxContentProvider;
+use FluidTYPO3\Flux\Utility\PathUtility;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+
 /**
  * Content object configuration provider
  *
- * @author Claus Due <claus@wildside.dk>, Wildside A/S
+ * @author Claus Due <claus@namelesscoder.net>
  * @package Fluidcontent
  * @subpackage Provider
  */
-class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Provider_AbstractContentObjectConfigurationProvider implements Tx_Flux_Provider_ContentObjectConfigurationProviderInterface {
+class ContentProvider extends FluxContentProvider implements ProviderInterface {
+
+	/**
+	 * @var string
+	 */
+	protected $controllerName = 'Content';
 
 	/**
 	 * @var string
@@ -58,28 +72,28 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 	protected $configurationSectionName = 'Configuration';
 
 	/**
-	 * @var Tx_Extbase_Configuration_ConfigurationManagerInterface
+	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @var Tx_Fluidcontent_Service_ConfigurationService
+	 * @var \FluidTYPO3\Fluidcontent\Service\ConfigurationService
 	 */
 	protected $configurationService;
 
 	/**
-	 * @param Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager
+	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
-	public function injectConfigurationManager(Tx_Extbase_Configuration_ConfigurationManagerInterface $configurationManager) {
+	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
 		$this->configurationManager = $configurationManager;
 	}
 
 	/**
-	 * @param Tx_Fluidcontent_Service_ConfigurationService $configurationService
+	 * @param \FluidTYPO3\Fluidcontent\Service\ConfigurationService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(Tx_Fluidcontent_Service_ConfigurationService $configurationService) {
+	public function injectConfigurationService(ConfigurationService $configurationService) {
 		$this->configurationService = $configurationService;
 	}
 
@@ -88,21 +102,25 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 	 * @return string
 	 */
 	public function getTemplatePathAndFilename(array $row) {
-		$templatePathAndFilename = $row['tx_fed_fcefile'];
-		if (strpos($templatePathAndFilename, ':') === FALSE) {
-			return NULL;
+		if (FALSE === empty($this->templatePathAndFilename)) {
+			$templatePathAndFilename = GeneralUtility::getFileAbsFileName($this->templatePathAndFilename);
+			if (TRUE === file_exists($templatePathAndFilename)) {
+				return $templatePathAndFilename;
+			}
+		} else {
+			$templatePathAndFilename = $row['tx_fed_fcefile'];
+			if (FALSE === strpos($templatePathAndFilename, ':')) {
+				return NULL;
+			}
 		}
 		list (, $filename) = explode(':', $templatePathAndFilename);
 		$paths = $this->getTemplatePaths($row);
-		if ($paths === NULL) {
-			return NULL;
-		}
 		$templateRootPath = $paths['templateRootPath'];
 		if ('/' === substr($templateRootPath, -1)) {
 			$templateRootPath = substr($templateRootPath, 0, -1);
 		}
-		if (TRUE === file_exists($templateRootPath . '/Content')) {
-			$templateRootPath = $templateRootPath . '/Content';
+		if (TRUE === file_exists($templateRootPath . '/' . $this->controllerName)) {
+			$templateRootPath = $templateRootPath . '/' . $this->controllerName;
 		}
 		$templatePathAndFilename = $templateRootPath . '/' . $filename;
 		if (TRUE === isset($paths['overlays']) && TRUE === is_array($paths['overlays'])) {
@@ -110,7 +128,7 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 				if (TRUE === isset($possibleOverlayPaths['templateRootPath'])) {
 					$overlayTemplateRootPath = $possibleOverlayPaths['templateRootPath'];
 					$overlayTemplateRootPath = rtrim($overlayTemplateRootPath, '/');
-					$possibleOverlayFile = t3lib_div::getFileAbsFileName($overlayTemplateRootPath . '/Content/' . $filename);
+					$possibleOverlayFile = GeneralUtility::getFileAbsFileName($overlayTemplateRootPath . '/' . $this->controllerName . '/' . $filename);
 					if (TRUE === file_exists($possibleOverlayFile)) {
 						$templatePathAndFilename = $possibleOverlayFile;
 						break;
@@ -118,7 +136,7 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 				}
 			}
 		}
-		$templatePathAndFilename = t3lib_div::getFileAbsFileName($templatePathAndFilename);
+		$templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
 		return $templatePathAndFilename;
 	}
 
@@ -126,44 +144,15 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 	 * @param array $row
 	 * @return array
 	 */
-	public function getTemplateVariables(array $row) {
-		$paths = $this->getTemplatePaths($row);
-		$extensionKey = (TRUE === isset($paths['extensionKey']) ? $paths['extensionKey'] : $this->getExtensionKey($row));
-		$extensionName = t3lib_div::underscoredToUpperCamelCase($extensionKey);
-		$templatePathAndFilename = $this->getTemplatePathAndFilename($row);
-		$flexFormVariables = $this->configurationService->convertFlexFormContentToArray($row['pi_flexform']);
-		$stored = $this->configurationService->getStoredVariable($templatePathAndFilename, 'storage', 'Configuration', $paths, $extensionName, $flexFormVariables);
-		$variables = $this->configurationService->convertFlexFormContentToArray($row['pi_flexform'], $stored);
-		$variables = t3lib_div::array_merge_recursive_overrule($flexFormVariables, $variables);
-		return $variables;
-	}
-
-	/**
-	 * @param array $row
-	 * @return array
-	 */
 	public function getTemplatePaths(array $row) {
-		$templatePathAndFilename = $row['tx_fed_fcefile'];
-		$extensionName = array_shift(explode(':', $templatePathAndFilename));
+		$extensionName = $this->getExtensionKey($row);
 		$paths = $this->configurationService->getContentConfiguration($extensionName);
-		$paths = Tx_Flux_Utility_Path::translatePath($paths);
-		return $paths;
-	}
+		if (TRUE === is_array($paths) && FALSE === empty($paths)) {
+			$paths = PathUtility::translatePath($paths);
+			return $paths;
+		}
 
-	/**
-	 * Perform various cleanup operations upon clearing cache
-	 *
-	 * @param array $command
-	 * @return void
-	 */
-	public function clearCacheCommand($command = array()) {
-		if (TRUE === isset($command['uid'])) {
-			return;
-		}
-		if (file_exists(FLUIDCONTENT_TEMPFILE) === TRUE) {
-			unlink(FLUIDCONTENT_TEMPFILE);
-		}
-		$this->configurationService->writeCachedConfigurationIfMissing();
+		return parent::getTemplatePaths($row);
 	}
 
 	/**
@@ -172,15 +161,11 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 	 */
 	public function getExtensionKey(array $row) {
 		$action = $row['tx_fed_fcefile'];
-		if (FALSE === strpos($action, ':')) {
-			$paths = $this->getTemplatePaths($row);
-			if (TRUE === isset($paths['extensionKey'])) {
-				return $paths['extensionKey'];
-			}
+		if (FALSE !== strpos($action, ':')) {
+			$extensionName = array_shift(explode(':', $action));
 		}
-		list ($extensionName, ) = explode(':', $action);
 		if (FALSE === empty($extensionName)) {
-			$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
+			$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
 			return $extensionKey;
 		}
 		return parent::getExtensionKey($row);
@@ -194,8 +179,7 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 		$fileReference = $this->getControllerActionReferenceFromRecord($row);
 		$identifier = explode(':', $fileReference);
 		$extensionName = array_shift($identifier);
-		$extensionKey = t3lib_div::camelCaseToLowerCaseUnderscored($extensionName);
-		return $extensionKey;
+		return $extensionName;
 	}
 
 	/**
@@ -218,6 +202,20 @@ class Tx_Fluidcontent_Provider_ContentConfigurationProvider extends Tx_Flux_Prov
 	public function getControllerActionReferenceFromRecord(array $row) {
 		$fileReference = $row['tx_fed_fcefile'];
 		return $fileReference;
+	}
+
+	/**
+	 * Switchable priority: highest possible for records matching
+	 * this Provider's targeted CType - lowest possible for others.
+	 *
+	 * @param array $row
+	 * @return integer
+	 */
+	public function getPriority(array $row) {
+		if (TRUE === isset($row['CType']) && $this->contentObjectType === $row['CType']) {
+			return 100;
+		}
+		return 0;
 	}
 
 }

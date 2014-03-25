@@ -1,8 +1,9 @@
 <?php
+namespace FluidTYPO3\Fluidcontent\Controller;
 /***************************************************************
  *  Copyright notice
  *
- *  (c) 2013 Claus Due <claus@wildside.dk>, Wildside A/S
+ *  (c) 2014 Claus Due <claus@namelesscoder.net>
  *
  *  All rights reserved
  *
@@ -23,6 +24,8 @@
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface;
+
 /**
  * Content Controller Interface
  *
@@ -33,6 +36,6 @@
  * @subpackage Controller
  * @route off
  */
-interface Tx_Fluidcontent_Controller_ContentControllerInterface extends Tx_Extbase_MVC_Controller_ControllerInterface {
+interface ContentControllerInterface extends ControllerInterface {
 
 }
