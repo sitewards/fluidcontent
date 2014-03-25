@@ -34,15 +34,12 @@ before_script:
 
   - git clone --depth 1 --single-branch --branch $TRAVIS_BRANCH git://github.com/FluidTYPO3/flux.git typo3conf/ext/flux
   - git clone --depth 1 git://git.typo3.org/TYPO3CMS/Extensions/phpunit.git typo3conf/ext/phpunit
-  - git clone --depth 1 git://github.com/FluidTYPO3/builder.git typo3conf/ext/builder
+  - git clone --depth 1 --single-branch --branch development git://github.com/FluidTYPO3/builder.git typo3conf/ext/builder
   - mv fluidcontent ./typo3conf/ext/
 
   - if [[ "$DB" == "mysql" ]]; then mysql -e "DROP DATABASE IF EXISTS typo3_test;" -uroot; fi
   - if [[ "$DB" == "mysql" ]]; then mysql -e "create database IF NOT EXISTS typo3_test;" -uroot; fi
   - if [[ "$DB" == "mysql" ]]; then mysql -uroot typo3_test < build-environment/Introduction/typo3conf/ext/introduction/Resources/Private/Subpackages/Introduction/Database/introduction.sql; fi
-  - if [[ "$DB" == "mysql" && -f build-environment/dbimport/cache_tables.sql ]]; then mysql -uroot typo3_test < build-environment/dbimport/cache_tables.sql; fi
-  - if [[ "$DB" == "mysql" && -f build-environment/dbimport/cli_users.sql ]]; then mysql -uroot typo3_test < build-environment/dbimport/cli_users.sql; fi
-  - if [[ "$DB" == "mysql" && -f build-environment/dbimport/phpunit.sql ]]; then mysql -uroot typo3_test < build-environment/dbimport/phpunit.sql; fi
 
   # post core schema import of extension schemas and state file from this and dependency extensions
   - if [[ "$DB" == "mysql" && -f typo3conf/ext/builder/Build/ImportSchema.sql ]]; then mysql -uroot typo3_test < typo3conf/ext/builder/Build/ImportSchema.sql; fi
