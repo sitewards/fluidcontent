@@ -82,8 +82,8 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	/**
 	 * @return string
 	 */
-	protected function getApplicationContext() {
-		return trim(getenv('TYPO3_CONTEXT'), '"\' ') ? : 'Production';
+	protected function isProductionContext() {
+		return FALSE === GeneralUtility::compat_version('6.2') || GeneralUtility::getApplicationContext()->isProduction();
 	}
 
 	/**
@@ -96,7 +96,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	public function getContentConfiguration($extensionName = NULL) {
 		$cacheKey = NULL === $extensionName ? 0 : $extensionName;
 		$cacheKey = 'content_' . $cacheKey;
-		if ('Production' === $this->getApplicationContext() && TRUE === isset(self::$cache[$cacheKey])) {
+		if (TRUE === isset(self::$cache[$cacheKey]) && TRUE === $this->isProductionContext()) {
 			return self::$cache[$cacheKey];
 		}
 		$newLocation = (array) $this->getTypoScriptSubConfiguration($extensionName, 'collections', 'fluidcontent');
@@ -132,7 +132,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		/** @var StringFrontend $cache */
 		$cache = $this->manager->getCache('fluidcontent');
 		$hasCache = $cache->has('pageTsConfig');
-		if ('Production' === $this->getApplicationContext() && TRUE === $hasCache) {
+		if (TRUE === $hasCache && TRUE === $this->isProductionContext()) {
 			return;
 		}
 		$templates = $this->getAllRootTypoScriptTemplates();
