@@ -25,6 +25,7 @@ namespace FluidTYPO3\Fluidcontent\Service;
  ***************************************************************/
 
 use FluidTYPO3\Flux\Core;
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -79,6 +80,13 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	}
 
 	/**
+	 * @return string
+	 */
+	protected function getApplicationContext() {
+		return trim(getenv('TYPO3_CONTEXT'), '"\' ') ? : 'Production';
+	}
+
+	/**
 	 * Get definitions of paths for FCEs defined in TypoScript
 	 *
 	 * @param string $extensionName
@@ -88,7 +96,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	public function getContentConfiguration($extensionName = NULL) {
 		$cacheKey = NULL === $extensionName ? 0 : $extensionName;
 		$cacheKey = 'content_' . $cacheKey;
-		if (TRUE === isset(self::$cache[$cacheKey])) {
+		if ('Production' === $this->getApplicationContext() && TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
 		$newLocation = (array) $this->getTypoScriptSubConfiguration($extensionName, 'collections', 'fluidcontent');
@@ -124,7 +132,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		/** @var StringFrontend $cache */
 		$cache = $this->manager->getCache('fluidcontent');
 		$hasCache = $cache->has('pageTsConfig');
-		if (TRUE === $hasCache) {
+		if ('Production' === $this->getApplicationContext() && TRUE === $hasCache) {
 			return;
 		}
 		$templates = $this->getAllRootTypoScriptTemplates();
@@ -218,6 +226,32 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 */
 	protected function buildAllWizardTabGroups($allTemplatePaths) {
 		$wizardTabs = array();
+		$forms = $this->getContentElementFormInstances();
+		foreach ($forms as $extensionKey => $formSet) {
+			foreach ($formSet as $id => $form) {
+				/** @var Form $form */
+				$group = $form->getGroup();
+				if (FALSE === empty($group)) {
+					$tabId = $this->sanitizeString($group);
+					$wizardTabs[$tabId]['title'] = $group;
+				} else {
+					$tabId = 'Content';
+				}
+				$contentElementId = $form->getOption('contentElementId');
+				$elementTsConfig = $this->buildWizardTabItem($tabId, $id, $form, $contentElementId);
+				$wizardTabs[$tabId]['elements'][$id] = $elementTsConfig;
+				$wizardTabs[$tabId]['key'] = $extensionKey;
+			}
+		}
+		return $wizardTabs;
+	}
+
+	/**
+	 * @return Form[][]
+	 */
+	public function getContentElementFormInstances() {
+		$elements = array();
+		$allTemplatePaths = $this->getContentConfiguration();
 		foreach ($allTemplatePaths as $key => $templatePathSet) {
 			$key = trim($key, '.');
 			$extensionKey = TRUE === isset($templatePathSet['extensionKey']) ? $templatePathSet['extensionKey'] : $key;
@@ -228,18 +262,16 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 				'partialRootPath' => TRUE === isset($templatePathSet['partialRootPath']) ? $templatePathSet['partialRootPath'] : 'EXT:' . $extensionKey . '/Resources/Private/Partials/',
 			);
 			$paths = PathUtility::translatePath($paths);
-			$templateRootPath = $paths['templateRootPath'];
-			if ('/' !== substr($templateRootPath, -1)) {
-				$templateRootPath .= '/';
-			}
+			$templateRootPath = rtrim($paths['templateRootPath'], '/') . '/';
 			if (TRUE === file_exists($templateRootPath . 'Content/')) {
 				$templateRootPath = $templateRootPath . 'Content/';
 			}
+			$templateRooPathLength = strlen($templateRootPath);
 			$files = array();
 			$files = GeneralUtility::getAllFilesAndFoldersInPath($files, $templateRootPath, 'html');
 			if (0 < count($files)) {
 				foreach ($files as $templateFilename) {
-					$fileRelPath = substr($templateFilename, strlen($templateRootPath));
+					$fileRelPath = substr($templateFilename, $templateRooPathLength);
 					$form = $this->getFormFromTemplateFile($templateFilename, 'Configuration', 'form', $paths, $extensionKey);
 					if (TRUE === empty($form)) {
 						$this->sendDisabledContentWarning($templateFilename);
@@ -249,21 +281,13 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 						$this->sendDisabledContentWarning($templateFilename);
 						continue;
 					}
-					$group = $form->getGroup();
-					if (FALSE === empty($group)) {
-						$tabId = $this->sanitizeString($group);
-						$wizardTabs[$tabId]['title'] = $group;
-					} else {
-						$tabId = 'Content';
-					}
 					$id = $extensionKey . '_' . preg_replace('/[\.\/]/', '_', $fileRelPath);
-					$elementTsConfig = $this->buildWizardTabItem($tabId, $id, $form, $key . ':' . $fileRelPath);
-					$wizardTabs[$tabId]['elements'][$id] = $elementTsConfig;
-					$wizardTabs[$tabId]['key'] = $extensionKey;
+					$form->setOption('contentElementId', $extensionKey . ':' . $fileRelPath);
+					$elements[$extensionKey][$id] = $form;
 				}
 			}
 		}
-		return $wizardTabs;
+		return $elements;
 	}
 
 	/**
