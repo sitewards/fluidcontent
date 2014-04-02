@@ -228,6 +228,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		$wizardTabs = array();
 		$forms = $this->getContentElementFormInstances();
 		foreach ($forms as $extensionKey => $formSet) {
+			$formSet = $this->sortObjectsByProperty($formSet, 'options.Fluidcontent.sorting', 'ASC');
 			foreach ($formSet as $id => $form) {
 				/** @var Form $form */
 				$group = $form->getGroup();
