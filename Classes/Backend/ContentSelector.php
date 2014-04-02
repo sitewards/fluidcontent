@@ -23,7 +23,7 @@ namespace FluidTYPO3\Fluidcontent\Backend;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use FluidTYPO3\Fluidcontnet\Service\ConfigurationService;
+use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
