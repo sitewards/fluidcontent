@@ -267,12 +267,12 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			if (TRUE === file_exists($templateRootPath . 'Content/')) {
 				$templateRootPath = $templateRootPath . 'Content/';
 			}
-			$templateRooPathLength = strlen($templateRootPath);
+			$templateRootPathLength = strlen($templateRootPath);
 			$files = array();
 			$files = GeneralUtility::getAllFilesAndFoldersInPath($files, $templateRootPath, 'html');
 			if (0 < count($files)) {
 				foreach ($files as $templateFilename) {
-					$fileRelPath = substr($templateFilename, $templateRooPathLength);
+					$fileRelPath = substr($templateFilename, $templateRootPathLength);
 					$form = $this->getFormFromTemplateFile($templateFilename, 'Configuration', 'form', $paths, $extensionKey);
 					if (TRUE === empty($form)) {
 						$this->sendDisabledContentWarning($templateFilename);
