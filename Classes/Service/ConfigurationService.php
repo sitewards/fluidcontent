@@ -24,6 +24,7 @@ namespace FluidTYPO3\Fluidcontent\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
@@ -56,6 +57,15 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @var string
 	 */
 	protected $defaultIcon;
+
+	/**
+	 * Storage for the current page UID to restore after this Service abuses
+	 * ConfigurationManager to override the page UID used when resolving
+	 * configurations for all TypoScript templates defined in the site.
+	 *
+	 * @var integer
+	 */
+	protected $pageUidBackup;
 
 	/**
 	 * @param CacheManager $manager
@@ -138,11 +148,14 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		$templates = $this->getAllRootTypoScriptTemplates();
 		$paths = $this->getPathConfigurationsFromRootTypoScriptTemplates($templates);
 		$pageTsConfig = '';
+		$this->backupPageUidForConfigurationManager();
+
 		foreach ($paths as $pageUid => $collection) {
 			if (FALSE === $collection) {
 				continue;
 			}
 			try {
+				$this->overrideCurrentPageUidForConfigurationManager($pageUid);
 				$wizardTabs = $this->buildAllWizardTabGroups($collection);
 				$collectionPageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
 				$pageTsConfig .= '[PIDinRootline = ' . strval($pageUid) . ']' . LF;
@@ -153,8 +166,37 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 				$this->debug($error);
 			}
 		}
+		$this->restorePageUidForConfigurationManager();
 		$cache->set('pageTsConfig', $pageTsConfig, array(), 806400);
 		return NULL;
+	}
+
+	/**
+	 * @param integer $newPageUid
+	 * @return void
+	 */
+	protected function overrideCurrentPageUidForConfigurationManager($newPageUid) {
+		if (TRUE === $this->configurationManager instanceof ConfigurationManager) {
+			$this->configurationManager->setCurrentPageUid($newPageUid);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function backupPageUidForConfigurationManager() {
+		if (TRUE === $this->configurationManager instanceof ConfigurationManager) {
+			$this->pageUidBackup = $this->configurationManager->getCurrentPageId();
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function restorePageUidForConfigurationManager() {
+		if (TRUE === $this->configurationManager instanceof ConfigurationManager) {
+			$this->configurationManager->setCurrentPageUid($this->pageUidBackup);
+		}
 	}
 
 	/**
