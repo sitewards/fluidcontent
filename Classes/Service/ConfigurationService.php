@@ -24,6 +24,8 @@ namespace FluidTYPO3\Fluidcontent\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
@@ -53,9 +55,23 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	protected $manager;
 
 	/**
+	 * @var WorkspacesAwareRecordService
+	 */
+	protected $recordService;
+
+	/**
 	 * @var string
 	 */
 	protected $defaultIcon;
+
+	/**
+	 * Storage for the current page UID to restore after this Service abuses
+	 * ConfigurationManager to override the page UID used when resolving
+	 * configurations for all TypoScript templates defined in the site.
+	 *
+	 * @var integer
+	 */
+	protected $pageUidBackup;
 
 	/**
 	 * @param CacheManager $manager
@@ -63,6 +79,14 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 */
 	public function injectCacheManager(CacheManager $manager) {
 		$this->manager = $manager;
+	}
+
+	/**
+	 * @param WorkspacesAwareRecordService $recordService
+	 * @return void
+	 */
+	public function injectRecordService(WorkspacesAwareRecordService $recordService) {
+		$this->recordService = $recordService;
 	}
 
 	/**
@@ -138,11 +162,14 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		$templates = $this->getAllRootTypoScriptTemplates();
 		$paths = $this->getPathConfigurationsFromRootTypoScriptTemplates($templates);
 		$pageTsConfig = '';
+		$this->backupPageUidForConfigurationManager();
+
 		foreach ($paths as $pageUid => $collection) {
 			if (FALSE === $collection) {
 				continue;
 			}
 			try {
+				$this->overrideCurrentPageUidForConfigurationManager($pageUid);
 				$wizardTabs = $this->buildAllWizardTabGroups($collection);
 				$collectionPageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
 				$pageTsConfig .= '[PIDinRootline = ' . strval($pageUid) . ']' . LF;
@@ -153,8 +180,37 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 				$this->debug($error);
 			}
 		}
+		$this->restorePageUidForConfigurationManager();
 		$cache->set('pageTsConfig', $pageTsConfig, array(), 806400);
 		return NULL;
+	}
+
+	/**
+	 * @param integer $newPageUid
+	 * @return void
+	 */
+	protected function overrideCurrentPageUidForConfigurationManager($newPageUid) {
+		if (TRUE === $this->configurationManager instanceof ConfigurationManager) {
+			$this->configurationManager->setCurrentPageUid($newPageUid);
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function backupPageUidForConfigurationManager() {
+		if (TRUE === $this->configurationManager instanceof ConfigurationManager) {
+			$this->pageUidBackup = $this->configurationManager->getCurrentPageId();
+		}
+	}
+
+	/**
+	 * @return void
+	 */
+	protected function restorePageUidForConfigurationManager() {
+		if (TRUE === $this->configurationManager instanceof ConfigurationManager) {
+			$this->configurationManager->setCurrentPageUid($this->pageUidBackup);
+		}
 	}
 
 	/**
@@ -202,17 +258,12 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @return array
 	 */
 	protected function getAllRootTypoScriptTemplates() {
-		static $statement = NULL;
-		if (NULL === $statement) {
-			$statement = $GLOBALS['TYPO3_DB']->prepare_SELECTquery('pid', 'sys_template', 'deleted = 0 AND hidden = 0 AND starttime <= :starttime AND (endtime = 0 OR endtime > :endtime)');
-		}
-
-		$statement->bindValue(':starttime', $GLOBALS['SIM_ACCESS_TIME']);
-		$statement->bindValue(':endtime', $GLOBALS['SIM_ACCESS_TIME']);
-		$statement->execute();
-		$rootTypoScriptTemplates = $statement->fetchAll();
-		$statement->free();
-
+		$condition = 'deleted = 0 AND hidden = 0 AND starttime <= :starttime AND (endtime = 0 OR endtime > :endtime)';
+		$paramters = array(
+			':starttime' => $GLOBALS['SIM_ACCESS_TIME'],
+			':endtime' => $GLOBALS['SIM_ACCESS_TIME']
+		);
+		$rootTypoScriptTemplates = $this->recordService->preparedGet('sys_template', 'pid', $condition, $paramters);
 		return $rootTypoScriptTemplates;
 	}
 
@@ -267,12 +318,12 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			if (TRUE === file_exists($templateRootPath . 'Content/')) {
 				$templateRootPath = $templateRootPath . 'Content/';
 			}
-			$templateRooPathLength = strlen($templateRootPath);
+			$templateRootPathLength = strlen($templateRootPath);
 			$files = array();
 			$files = GeneralUtility::getAllFilesAndFoldersInPath($files, $templateRootPath, 'html');
 			if (0 < count($files)) {
 				foreach ($files as $templateFilename) {
-					$fileRelPath = substr($templateFilename, $templateRooPathLength);
+					$fileRelPath = substr($templateFilename, $templateRootPathLength);
 					$form = $this->getFormFromTemplateFile($templateFilename, 'Configuration', 'form', $paths, $extensionKey);
 					if (TRUE === empty($form)) {
 						$this->sendDisabledContentWarning($templateFilename);
