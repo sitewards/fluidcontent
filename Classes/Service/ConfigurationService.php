@@ -386,7 +386,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @return string
 	 */
 	protected function buildWizardTabItem($tabId, $id, $form, $templateFileIdentity) {
-		$icon = $form->getIcon();
+		$icon = $form->getOption(Form::OPTION_ICON);
 		$description = $form->getDescription();
 		if (TRUE === empty($description)) {
 			$description = '-';
