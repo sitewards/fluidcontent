@@ -104,13 +104,6 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	}
 
 	/**
-	 * @return string
-	 */
-	protected function isProductionContext() {
-		return FALSE === GeneralUtility::compat_version('6.2') || GeneralUtility::getApplicationContext()->isProduction();
-	}
-
-	/**
 	 * Get definitions of paths for FCEs defined in TypoScript
 	 *
 	 * @param string $extensionName
@@ -120,7 +113,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	public function getContentConfiguration($extensionName = NULL) {
 		$cacheKey = NULL === $extensionName ? 0 : $extensionName;
 		$cacheKey = 'content_' . $cacheKey;
-		if (TRUE === isset(self::$cache[$cacheKey]) && TRUE === $this->isProductionContext()) {
+		if (TRUE === isset(self::$cache[$cacheKey])) {
 			return self::$cache[$cacheKey];
 		}
 		$newLocation = (array) $this->getTypoScriptSubConfiguration($extensionName, 'collections', 'fluidcontent');
@@ -156,7 +149,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		/** @var StringFrontend $cache */
 		$cache = $this->manager->getCache('fluidcontent');
 		$hasCache = $cache->has('pageTsConfig');
-		if (TRUE === $hasCache && TRUE === $this->isProductionContext()) {
+		if (TRUE === $hasCache) {
 			return;
 		}
 		$templates = $this->getAllRootTypoScriptTemplates();
@@ -386,7 +379,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @return string
 	 */
 	protected function buildWizardTabItem($tabId, $id, $form, $templateFileIdentity) {
-		$icon = $form->getIcon();
+		$icon = $form->getOption(Form::OPTION_ICON);
 		$description = $form->getDescription();
 		if (TRUE === empty($description)) {
 			$description = '-';

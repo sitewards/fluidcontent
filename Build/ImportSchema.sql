@@ -14,6 +14,24 @@ call gftyuixcdlsckghcjkjsehlgcyjgcvbkrshj();;
 
 ALTER TABLE `tt_content` ADD `tx_fed_fcefile` varchar(255) DEFAULT '' NOT NULL;
 
+CREATE TABLE `cf_fluidcontent` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `identifier` varchar(250) NOT NULL DEFAULT '',
+  `expires` int(11) unsigned NOT NULL DEFAULT '0',
+  `content` mediumblob,
+  PRIMARY KEY (`id`),
+  KEY `cache_id` (`identifier`,`expires`)
+) ENGINE=InnoDB;
+
+CREATE TABLE `cf_fluidcontent_tags` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `identifier` varchar(250) NOT NULL DEFAULT '',
+  `tag` varchar(250) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `cache_id` (`identifier`),
+  KEY `cache_tag` (`tag`)
+) ENGINE=InnoDB;
+
 CREATE TABLE IF NOT EXISTS `cf_extbase_object` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `identifier` varchar(250) NOT NULL DEFAULT '',
