@@ -25,7 +25,6 @@ namespace FluidTYPO3\Fluidcontent\Backend;
 
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Class that renders a selection field for Fluid FCE template selection

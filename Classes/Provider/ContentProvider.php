@@ -166,6 +166,7 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	/**
 	 * @param array $row
 	 * @return string
+	 * @throws \RuntimeException
 	 */
 	public function getControllerActionFromRecord(array $row) {
 		$fileReference = $this->getControllerActionReferenceFromRecord($row);
