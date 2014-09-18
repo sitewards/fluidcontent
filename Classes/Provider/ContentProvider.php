@@ -170,7 +170,9 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	public function getControllerActionFromRecord(array $row) {
 		$fileReference = $this->getControllerActionReferenceFromRecord($row);
 		if (TRUE === empty($fileReference)) {
-			throw new \RuntimeException('No content template found', 1404736585);
+			$table = $this->getTableName($row);
+			$this->configurationService->message('No content template found in "' . $table . ':' . $row['uid'] . '"', 1404736585);
+			return 'default';
 		}
 		$identifier = explode(':', $fileReference);
 		$actionName = array_pop($identifier);
