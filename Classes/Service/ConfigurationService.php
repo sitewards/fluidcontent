@@ -297,9 +297,9 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	public function getContentElementFormInstances() {
 		$elements = array();
 		$allTemplatePaths = $this->getContentConfiguration();
-		foreach ($allTemplatePaths as $key => $templatePathSet) {
-			$key = trim($key, '.');
-			$extensionKey = TRUE === isset($templatePathSet['extensionKey']) ? $templatePathSet['extensionKey'] : $key;
+		foreach ($allTemplatePaths as $registeredExtensionKey => $templatePathSet) {
+			$registeredExtensionKey = trim($registeredExtensionKey, '.');
+			$extensionKey = TRUE === isset($templatePathSet['extensionKey']) ? $templatePathSet['extensionKey'] : $registeredExtensionKey;
 			$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
 			$paths = array(
 				'templateRootPath' => TRUE === isset($templatePathSet['templateRootPath']) ? $templatePathSet['templateRootPath'] : 'EXT:' . $extensionKey . '/Resources/Private/Templates/',
@@ -326,9 +326,9 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 						$this->sendDisabledContentWarning($templateFilename);
 						continue;
 					}
-					$id = $extensionKey . '_' . preg_replace('/[\.\/]/', '_', $fileRelPath);
-					$form->setOption('contentElementId', $extensionKey . ':' . $fileRelPath);
-					$elements[$extensionKey][$id] = $form;
+					$id = preg_replace('/[\.\/]/', '_', $registeredExtensionKey . '_' . $fileRelPath);
+					$form->setOption('contentElementId', $registeredExtensionKey . ':' . $fileRelPath);
+					$elements[$registeredExtensionKey][$id] = $form;
 				}
 			}
 		}
