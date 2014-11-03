@@ -276,12 +276,11 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			foreach ($formSet as $id => $form) {
 				/** @var Form $form */
 				$group = $form->getGroup();
-				if (FALSE === empty($group)) {
-					$tabId = $this->sanitizeString($group);
-					$wizardTabs[$tabId]['title'] = $group;
-				} else {
-					$tabId = 'Content';
+				if (TRUE === empty($group)) {
+					$group = 'Content';
 				}
+				$tabId = $this->sanitizeString($group);
+				$wizardTabs[$tabId]['title'] = $group;
 				$contentElementId = $form->getOption('contentElementId');
 				$elementTsConfig = $this->buildWizardTabItem($tabId, $id, $form, $contentElementId);
 				$wizardTabs[$tabId]['elements'][$id] = $elementTsConfig;
