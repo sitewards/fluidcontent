@@ -29,6 +29,7 @@ use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
@@ -378,7 +379,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @return string
 	 */
 	protected function buildWizardTabItem($tabId, $id, $form, $templateFileIdentity) {
-		$icon = $form->getOption(Form::OPTION_ICON);
+		$icon = MiscellaneousUtility::getIconForTemplate($form);
 		$description = $form->getDescription();
 		if (TRUE === empty($description)) {
 			$description = '-';
