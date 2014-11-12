@@ -276,7 +276,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			$formSet = $this->sortObjectsByProperty($formSet, 'options.Fluidcontent.sorting', 'ASC');
 			foreach ($formSet as $id => $form) {
 				/** @var Form $form */
-				$group = $form->getGroup();
+				$group = $form->getOption(Form::OPTION_GROUP);
 				if (TRUE === empty($group)) {
 					$group = 'Content';
 				}
