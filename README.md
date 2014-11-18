@@ -110,7 +110,7 @@ provided with a `<f:section name="Configuration">` which contains the Flux confi
 <div xmlns="http://www.w3.org/1999/xhtml" lang="en"
      xmlns:flux="http://fedext.net/ns/flux/ViewHelpers"
      xmlns:widget="http://fedext.net/ns/fluidwidget/ViewHelpers"
-     xmlns:f="http://typo3.org/ns/fluid/ViewHelpers">
+     xmlns:f="http://typo3.org/ns/TYPO3/Fluid/ViewHelpers">
 
 <f:section name="Configuration">
     <flux:form id="ajax-loader" label="Ajax Loader" description="Loads content through AJAX. Requires EXT:fluidwidget">
