@@ -32,6 +32,7 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\StringFrontend;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -119,7 +120,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		}
 		$newLocation = (array) $this->getTypoScriptSubConfiguration($extensionName, 'collections', 'fluidcontent');
 		$oldLocation = (array) $this->getTypoScriptSubConfiguration($extensionName, 'fce', 'fed');
-		$merged = GeneralUtility::array_merge_recursive_overrule($oldLocation, $newLocation);
+		$merged = RecursiveArrayUtility::mergeRecursiveOverrule($oldLocation, $newLocation);
 		$registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Content');
 		if (NULL === $extensionName) {
 			foreach ($registeredExtensionKeys as $registeredExtensionKey) {
@@ -133,7 +134,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		} else {
 			$nativeViewLocation = $this->getViewConfigurationForExtensionName($extensionName);
 			if (TRUE === is_array($nativeViewLocation)) {
-				$merged = GeneralUtility::array_merge_recursive_overrule($nativeViewLocation, $merged);
+				$merged = RecursiveArrayUtility::mergeRecursiveOverrule($nativeViewLocation, $merged);
 			}
 			if (FALSE === isset($merged['extensionKey'])) {
 				$merged['extensionKey'] = ExtensionNamingUtility::getExtensionKey($extensionName);
@@ -240,9 +241,9 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 				}
 				$registeredPathCollections[$registeredExtensionKey] = $nativeViewLocation;
 			}
-			$merged = GeneralUtility::array_merge_recursive_overrule($oldTemplatePathLocation, $newTemplatePathLocation);
+			$merged = RecursiveArrayUtility::mergeRecursiveOverrule($oldTemplatePathLocation, $newTemplatePathLocation);
 			$merged = GeneralUtility::removeDotsFromTS($merged);
-			$merged = GeneralUtility::array_merge($merged, $registeredPathCollections);
+			$merged = RecursiveArrayUtility::merge($merged, $registeredPathCollections);
 			$allTemplatePaths[$pageUid] = $merged;
 		}
 		return $allTemplatePaths;
