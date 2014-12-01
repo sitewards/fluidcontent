@@ -4,9 +4,25 @@
     "require": {
         "fluidtypo3/flux": "*"
     },
+	"require-dev": {
+		"typo3/cms": "6.2.7",
+		"fluidtypo3/development": "*"
+	},
+	"autoload": {
+		"psr-4": {
+			"FluidTYPO3\\Fluidcontent\\": "Classes/"
+		},
+		"classmap": [
+			"vendor/typo3/cms/typo3/sysext/extbase",
+			"vendor/typo3/cms/typo3/sysext/fluid",
+			"vendor/typo3/cms/typo3/sysext/core",
+			"vendor/typo3/cms/typo3/sysext/backend",
+			"vendor/typo3/cms/typo3/sysext/frontend"
+		]
+	},
     "type": "typo3-cms-extension",
     "keywords": ["TYPO3 CMS", "templating", "bootstrap", "flux", "fluidcontent", "fedext", "fluid"],
-    "homepage": "http://fluidtypo3.org",
+    "homepage": "https://fluidtypo3.org",
     "license": "GPL-2.0+",
 	"version": "4.2.0",
     "support": {

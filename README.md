@@ -6,7 +6,7 @@ Fluidcontent: Fluid Content Elements
 > a simple, highly specific purpose. It uses Flux to enable highly dynamic configuration of variables used when rendering the
 > template.
 
-[![Build Status](https://travis-ci.org/FluidTYPO3/fluidcontent.png?branch=master)](https://travis-ci.org/FluidTYPO3/fluidcontent)
+[![Build Status](https://img.shields.io/jenkins/s/https/jenkins.fluidtypo3.org/fluidcontent.svg?style=flat-square)](https://jenkins.fluidtypo3.org/job/fluidcontent) [![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/fluidcontent/development.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/fluidcontent)
 
 ## What does it do?
 
