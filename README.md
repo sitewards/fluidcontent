@@ -1,11 +1,6 @@
 Fluidcontent: Fluid Content Elements
 ====================================
 
-> **Fluid Content** enables the use of special content elements, each based on a Fluid template - much like TemplaVoila's flexible
-> content elements. The feature was born in the extension FED and ported into this extension, making a very light extension with
-> a simple, highly specific purpose. It uses Flux to enable highly dynamic configuration of variables used when rendering the
-> template.
-
 [![Build Status](https://img.shields.io/jenkins/s/https/jenkins.fluidtypo3.org/fluidcontent.svg?style=flat-square)](https://jenkins.fluidtypo3.org/job/fluidcontent) [![Coverage Status](https://img.shields.io/coveralls/FluidTYPO3/fluidcontent/development.svg?style=flat-square)](https://coveralls.io/r/FluidTYPO3/fluidcontent) [![Build status](http://img.shields.io/badge/documentation-online-blue.svg?style=flat-square)](https://fluidtypo3.org/templating-manual/introduction.html)
 
 ## What does it do?
