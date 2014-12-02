@@ -12,11 +12,8 @@ Fluidcontent: Fluid Content Elements
 
 EXT:fluidcontent lets you write custom content elements based on Fluid templates. Each content element and its possible settings
 are contained in a single Fluid template file. Whole sets of files can be registered and placed in its own tab in the new content
-element wizard, letting you group your content elements. The template files are placed in a very basic extension.
-
-The _Nested Content Elements_ support that Flux enables is utilized to make content elements which can contain other content
-elements - and which can be edited inline in the pgage backend module (with native drag and drop support in 6.0 and drag and drop
-support in 4.x branches through the Grid Elements extension - key `gridelements`).
+element wizard, letting you group your content elements. The template files are placed in a very basic extension. The _Nested
+Content Elements_ support that Flux enables is utilized to make content elements which can contain other content elements.
 
 ## Why use it?
 
@@ -30,13 +27,7 @@ Fluid Content Elements are registered through TypoScript. The template files are
 each template, which is then made available for use just as any other content element type is used.
 
 When editing the content element, Flux is used to generate the form section which lets content editors configure variables which
-become available in the template. This allows completely dynamic variables (as opposed to adding extra fields on the tt_content
+become available in the template. This allows completely dynamic variables (as opposed to adding extra fields on the `tt_content`
 table and configuring TCA for each added column).
-
-Content templates work best if they are shipped (and created) in an extension, the key of which is used by identify the content
-templates in relation to the Fluid Content extension. This makes the templates excellently portable and allow you to quickly add
-custom ViewHelpers used by your specific page templates. Such an extension need only contain an `ext_emconf.php` file and
-optionally a static TypoScript configuration and an `ext_localconf.php` to register that TypoScript static configuration. Using
-a static file makes it easy to include the content elements.
 
 View the [online templating manual](https://fluidtypo3.org/documentation/templating-manual/introduction.html) for more information.
