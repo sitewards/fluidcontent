@@ -8,7 +8,7 @@
 		"typo3/cms": "6.2.7",
 		"fluidtypo3/development": "*"
 	},
-	"autoload": {
+	"autoload-dev": {
 		"psr-4": {
 			"FluidTYPO3\\Fluidcontent\\": "Classes/"
 		},

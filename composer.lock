@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "7b9fb828235f0e43f54eeb521b48f145",
+    "hash": "c579cfb542f677e4e0d5b0d68a0f24ed",
     "packages": [
         {
             "name": "fluidtypo3/flux",
