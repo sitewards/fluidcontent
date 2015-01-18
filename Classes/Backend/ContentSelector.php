@@ -10,6 +10,7 @@ namespace FluidTYPO3\Fluidcontent\Backend;
 
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use FluidTYPO3\Flux\Form;
 
 /**
  * Class that renders a selection field for Fluid FCE template selection
@@ -28,20 +29,30 @@ class ContentSelector {
 		$setup = $contentService->getContentElementFormInstances();
 		$name = $parameters['itemFormElName'];
 		$value = $parameters['itemFormElValue'];
-		$select = '<div><select name="' . htmlspecialchars($name) . '"  class="formField select" onchange="if (confirm(TBE_EDITOR.labels.onChangeAlert) && TBE_EDITOR.checkSubmit(-1)){ TBE_EDITOR.submitForm() };">' . LF;
-		$select .= '<option value="">' . $GLOBALS['LANG']->sL('LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile', TRUE) . '</option>' . LF;
+		$selectedIcon = '';
+		$option = '<option value="">' . $GLOBALS['LANG']->sL('LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile', TRUE) . '</option>' . LF;
 		foreach ($setup as $groupLabel => $configuration) {
-			$select .= '<optgroup label="' . htmlspecialchars($groupLabel) . '">' . LF;
+			$option .= '<optgroup label="' . htmlspecialchars($groupLabel) . '">' . LF;
 			foreach ($configuration as $form) {
+				/** @var Form $form */
+				$selected = '';
 				$optionValue = $form->getOption('contentElementId');
-				$selected = ($optionValue === $value ? ' selected="selected"' : '');
+				if ($optionValue === $value) {
+					$selected = ' selected="selected"';
+					$selectedIcon = $form->getOption(Form::OPTION_ICON);
+				}
 				$label = $form->getLabel();
 				$label = (0 === strpos($label, 'LLL:') ? $GLOBALS['LANG']->sL($label) : $label);;
-				$select .= '<option value="' . htmlspecialchars($optionValue) . '"' . $selected . '>' .
-					htmlspecialchars($label) . '</option>' . LF;
+				$option .= '<option ' .
+					'style="background:#fff url(' . $form->getOption(Form::OPTION_ICON) . ') 2px 50% / 16px 16px no-repeat; height: 16px; padding-top: 2px; padding-left: 22px;" ' .
+					'value="' . htmlspecialchars($optionValue) . '"' . $selected . '>' . htmlspecialchars($label) . '</option>' . LF;
 			}
-			$select .= '</optgroup>' . LF;
+			$option .= '</optgroup>' . LF;
 		}
+		$select = '<div><select ' .
+			'style="background: #fff url(' . $selectedIcon . ') 5px 50% / 16px 16px no-repeat; padding-top: 2px; padding-left: 24px;" ' .
+			'name="' . htmlspecialchars($name) . '"  class="formField select" onchange="if (confirm(TBE_EDITOR.labels.onChangeAlert) && TBE_EDITOR.checkSubmit(-1)){ TBE_EDITOR.submitForm() };">' . LF;
+		$select .= $option;
 		$select .= '</select></div>' . LF;
 		unset($parentObject);
 		return $select;
