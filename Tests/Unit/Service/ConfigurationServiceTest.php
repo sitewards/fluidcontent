@@ -24,7 +24,6 @@ namespace FluidTYPO3\Fluidcontent\Tests\Unit\Service;
  *  This copyright notice MUST APPEAR in all copies of the script!
  ***************************************************************/
 
-use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
 
 /**
