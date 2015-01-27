@@ -366,9 +366,6 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	protected function buildWizardTabItem($tabId, $id, $form, $templateFileIdentity) {
 		$icon = MiscellaneousUtility::getIconForTemplate($form);
 		$description = $form->getDescription();
-		if (TRUE === empty($description)) {
-			$description = '-';
-		}
 		$iconFileRelativePath = ($icon ? $icon : $this->defaultIcon);
 		return sprintf('
 			mod.wizards.newContentElement.wizardItems.%s.elements.%s {
