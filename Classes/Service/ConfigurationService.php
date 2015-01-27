@@ -238,11 +238,11 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 */
 	protected function getAllRootTypoScriptTemplates() {
 		$condition = 'deleted = 0 AND hidden = 0 AND starttime <= :starttime AND (endtime = 0 OR endtime > :endtime)';
-		$paramters = array(
+		$parameters = array(
 			':starttime' => $GLOBALS['SIM_ACCESS_TIME'],
 			':endtime' => $GLOBALS['SIM_ACCESS_TIME']
 		);
-		$rootTypoScriptTemplates = $this->recordService->preparedGet('sys_template', 'pid', $condition, $paramters);
+		$rootTypoScriptTemplates = $this->recordService->preparedGet('sys_template', 'pid', $condition, $parameters);
 		return $rootTypoScriptTemplates;
 	}
 
