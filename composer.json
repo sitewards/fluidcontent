@@ -5,12 +5,13 @@
         "fluidtypo3/flux": "*"
     },
 	"require-dev": {
-		"typo3/cms": "6.2.7",
-		"fluidtypo3/development": "*"
+		"fluidtypo3/development": "*",
+		"fluidtypo3/flux": "dev-development"
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"FluidTYPO3\\Fluidcontent\\": "Classes/"
+			"FluidTYPO3\\Fluidcontent\\": "Classes/",
+			"FluidTYPO3\\Flux\\": "vendor/fluidtypo3/flux/Classes/"
 		},
 		"classmap": [
 			"vendor/typo3/cms/typo3/sysext/extbase",
