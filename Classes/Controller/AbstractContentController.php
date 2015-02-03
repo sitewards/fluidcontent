@@ -20,12 +20,12 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 abstract class AbstractContentController extends AbstractFluxController implements ContentControllerInterface {
 
 	/**
-	 * @var \FluidTYPO3\Fluidcontent\Service\ConfigurationService
+	 * @var ConfigurationService
 	 */
 	protected $configurationService;
 
 	/**
-	 * @param \FluidTYPO3\Fluidcontent\Service\ConfigurationService $configurationService
+	 * @param ConfigurationService $configurationService
 	 * @return void
 	 */
 	public function injectConfigurationService(ConfigurationService $configurationService) {
@@ -33,7 +33,7 @@ abstract class AbstractContentController extends AbstractFluxController implemen
 	}
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Mvc\View\ViewInterface $view
+	 * @param ViewInterface $view
 	 * @return void
 	 */
 	public function initializeView(ViewInterface $view) {

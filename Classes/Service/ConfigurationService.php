@@ -8,14 +8,14 @@ namespace FluidTYPO3\Fluidcontent\Service;
  * LICENSE.md file that was distributed with this source code.
  */
 
-use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Service\FluxService;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
-use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\StringFrontend;
@@ -355,7 +355,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 *
 	 * @param string $tabId
 	 * @param string $id
-	 * @param \FluidTYPO3\Flux\Form $form
+	 * @param Form $form
 	 * @param string $templateFileIdentity
 	 * @return string
 	 */

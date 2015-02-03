@@ -9,10 +9,10 @@ namespace FluidTYPO3\Fluidcontent\Provider;
  */
 
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
-use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ContentProvider as FluxContentProvider;
-use FluidTYPO3\Flux\Utility\PathUtility;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
@@ -53,17 +53,17 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	protected $configurationSectionName = 'Configuration';
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+	 * @var ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @var \FluidTYPO3\Fluidcontent\Service\ConfigurationService
+	 * @var ConfigurationService
 	 */
 	protected $configurationService;
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
+	 * @param ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
 	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
@@ -71,7 +71,7 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	}
 
 	/**
-	 * @param \FluidTYPO3\Fluidcontent\Service\ConfigurationService $configurationService
+	 * @param ConfigurationService $configurationService
 	 * @return void
 	 */
 	public function injectConfigurationService(ConfigurationService $configurationService) {

@@ -10,7 +10,6 @@ namespace FluidTYPO3\Fluidcontent\Tests\Unit\Service;
 
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
-use TYPO3\CMS\Core\Database\PreparedStatement;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 

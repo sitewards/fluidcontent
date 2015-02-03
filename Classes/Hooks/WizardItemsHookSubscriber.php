@@ -11,6 +11,7 @@ namespace FluidTYPO3\Fluidcontent\Hooks;
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
@@ -83,7 +84,7 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 
 	/**
 	 * @param array $items
-	 * @param \TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController $parentObject
+	 * @param NewContentElementController $parentObject
 	 * @return array
 	 */
 	protected function filterPermittedFluidContentTypesByInsertionPosition(array $items, $parentObject) {
