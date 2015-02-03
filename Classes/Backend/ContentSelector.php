@@ -13,9 +13,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
  * Class that renders a selection field for Fluid FCE template selection
- *
- * @package	Fluidcontent
- * @subpackage Backend
  */
 class ContentSelector {
 

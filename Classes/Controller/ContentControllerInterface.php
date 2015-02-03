@@ -16,8 +16,6 @@ use TYPO3\CMS\Extbase\Mvc\Controller\ControllerInterface;
  * Implement in custom controllers which must be located at
  * <PackageName>/Classes/Controller/ContentController by convention.
  *
- * @package Fluidcontent
- * @subpackage Controller
  * @route off
  */
 interface ContentControllerInterface extends ControllerInterface {

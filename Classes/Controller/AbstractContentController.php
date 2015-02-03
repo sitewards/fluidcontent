@@ -15,8 +15,6 @@ use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 /**
  * Abstract Content Controller
  *
- * @package Fluidcontent
- * @subpackage Controller
  * @route off
  */
 abstract class AbstractContentController extends AbstractFluxController implements ContentControllerInterface {

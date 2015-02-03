@@ -19,10 +19,6 @@ use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Content object configuration provider
- *
- * @author Claus Due <claus@namelesscoder.net>
- * @package Fluidcontent
- * @subpackage Provider
  */
 class ContentProvider extends FluxContentProvider implements ProviderInterface {
 

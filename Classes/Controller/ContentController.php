@@ -11,8 +11,6 @@ namespace FluidTYPO3\Fluidcontent\Controller;
 /**
  * Flexible Content Element Plugin Rendering Controller
  *
- * @package Fluidcontent
- * @subpackage Controller
  * @route off
  */
 class ContentController extends AbstractContentController implements ContentControllerInterface {
