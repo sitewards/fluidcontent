@@ -114,25 +114,25 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 		if (0 > $parentObject->uid_pid) {
 			// pasting after another element means we should try to resolve the Flux content relation
 			// from that element instead of GET parameters (clicked: "create new" icon after other element)
-			$relativeRecordUid = abs($parentObject->uid_pid);
-			$relativeRecord = $this->recordService->getSingle('tt_content', '*', $relativeRecordUid);
-			$fluxAreaName = $relativeRecord['tx_flux_column'];
+			$parentRecord = $this->recordService->getSingle('tt_content', '*', abs($parentObject->uid_pid));
+			$fluxAreaName = (string) $parentRecord['tx_flux_column'];
+			$parentRecordUid = (integer) $parentRecord['tx_flux_parent'];
 		} elseif (TRUE === isset($defaultValues['tt_content']['tx_flux_column'])) {
 			// attempt to read the target Flux content area from GET parameters (clicked: "create new" icon
 			// in top of nested Flux content area
-			$fluxAreaName = $defaultValues['tt_content']['tx_flux_column'];
-			$relativeRecordUid = $defaultValues['tt_content']['tx_flux_parent'];
+			$fluxAreaName = (string) $defaultValues['tt_content']['tx_flux_column'];
+			$parentRecordUid = (integer) $defaultValues['tt_content']['tx_flux_parent'];
 		}
 		// if these variables now indicate that we are inserting content elements into a Flux-enabled content
 		// area inside another content element, attempt to read allowed/denied content types from the
 		// Grid returned by the Provider that applies to the parent element's type and configuration
 		// (admitted, that's quite a mouthful - but it's not that different from reading the values from
 		// a page template like above; it's the same principle).
-		if (0 < $relativeRecordUid && FALSE === empty($fluxAreaName)) {
-			$relativeRecord = $this->recordService->getSingle('tt_content', '*', $relativeRecordUid);
-			$contentProviders = $this->configurationService->resolveConfigurationProviders('tt_content', NULL, $relativeRecord);
+		if (0 < $parentRecordUid && FALSE === empty($fluxAreaName)) {
+			$parentRecord = $this->recordService->getSingle('tt_content', '*', $parentRecordUid);
+			$contentProviders = $this->configurationService->resolveConfigurationProviders('tt_content', NULL, $parentRecord);
 			foreach ($contentProviders as $contentProvider) {
-				$grid = $contentProvider->getGrid($relativeRecord);
+				$grid = $contentProvider->getGrid($parentRecord);
 				if (NULL === $grid) {
 					continue;
 				}
