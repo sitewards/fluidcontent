@@ -84,15 +84,15 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 */
 	public function getTemplatePathAndFilename(array $row) {
 		if (FALSE === empty($this->templatePathAndFilename)) {
-			$templatePathAndFilename = GeneralUtility::getFileAbsFileName($this->templatePathAndFilename);
+			$templatePathAndFilename = $this->templatePathAndFilename;
 			if (TRUE === file_exists($templatePathAndFilename)) {
 				return $templatePathAndFilename;
 			}
-		} else {
-			$templatePathAndFilename = $row['tx_fed_fcefile'];
-			if (FALSE === strpos($templatePathAndFilename, ':')) {
-				return NULL;
-			}
+			return NULL;
+		}
+		$templatePathAndFilename = $row['tx_fed_fcefile'];
+		if (FALSE === strpos($templatePathAndFilename, ':')) {
+			return NULL;
 		}
 		list (, $filename) = explode(':', $templatePathAndFilename);
 		list ($controllerAction, $format) = explode('.', $filename);
@@ -110,10 +110,8 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 		$paths = $this->configurationService->getContentConfiguration($extensionName);
 		if (TRUE === is_array($paths) && FALSE === empty($paths)) {
 			$paths = PathUtility::translatePath($paths);
-			return $paths;
 		}
-
-		return parent::getTemplatePaths($row);
+		return $paths;
 	}
 
 	/**
@@ -121,15 +119,15 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 * @return string
 	 */
 	public function getExtensionKey(array $row) {
+		$extensionKey = $this->extensionKey;
 		$action = $row['tx_fed_fcefile'];
 		if (FALSE !== strpos($action, ':')) {
 			$extensionName = array_shift(explode(':', $action));
 		}
 		if (FALSE === empty($extensionName)) {
 			$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-			return $extensionKey;
 		}
-		return parent::getExtensionKey($row);
+		return $extensionKey;
 	}
 
 	/**
