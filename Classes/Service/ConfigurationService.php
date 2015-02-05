@@ -279,15 +279,10 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		$elements = array();
 		$allTemplatePaths = $this->getContentConfiguration();
 		foreach ($allTemplatePaths as $registeredExtensionKey => $templatePathSet) {
+			$paths = PathUtility::translatePath($templatePathSet);
 			$registeredExtensionKey = trim($registeredExtensionKey, '.');
 			$extensionKey = TRUE === isset($templatePathSet['extensionKey']) ? $templatePathSet['extensionKey'] : $registeredExtensionKey;
 			$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
-			$paths = array(
-				'templateRootPath' => TRUE === isset($templatePathSet['templateRootPath']) ? $templatePathSet['templateRootPath'] : 'EXT:' . $extensionKey . '/Resources/Private/Templates/',
-				'layoutRootPath' => TRUE === isset($templatePathSet['layoutRootPath']) ? $templatePathSet['layoutRootPath'] : 'EXT:' . $extensionKey . '/Resources/Private/Layouts/',
-				'partialRootPath' => TRUE === isset($templatePathSet['partialRootPath']) ? $templatePathSet['partialRootPath'] : 'EXT:' . $extensionKey . '/Resources/Private/Partials/',
-			);
-			$paths = PathUtility::translatePath($paths);
 			$templateRootPath = rtrim($paths['templateRootPath'], '/') . '/';
 			if (TRUE === file_exists($templateRootPath . 'Content/')) {
 				$templateRootPath = $templateRootPath . 'Content/';
