@@ -24,8 +24,7 @@ class ContentSelector {
 	 * @return string
 	 */
 	public function renderField(array &$parameters, &$parentObject) {
-		/** @var ConfigurationService $contentService */
-		$contentService = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')->get('FluidTYPO3\Fluidcontent\Service\ConfigurationService');
+		$contentService = $this->getConfigurationService();
 		$setup = $contentService->getContentElementFormInstances();
 		$name = $parameters['itemFormElName'];
 		$value = $parameters['itemFormElValue'];
@@ -37,14 +36,25 @@ class ContentSelector {
 				$optionValue = $form->getOption('contentElementId');
 				$selected = ($optionValue === $value ? ' selected="selected"' : '');
 				$label = $form->getLabel();
-				$label = $GLOBALS['LANG']->sL($label);
-				$select .= '<option value="' . htmlspecialchars($optionValue) . '"' . $selected . '>' . htmlspecialchars($label) . '</option>' . LF;
+				$label = (0 === strpos($label, 'LLL:') ? $GLOBALS['LANG']->sL($label) : $label);;
+				$select .= '<option value="' . htmlspecialchars($optionValue) . '"' . $selected . '>' .
+					htmlspecialchars($label) . '</option>' . LF;
 			}
 			$select .= '</optgroup>' . LF;
 		}
 		$select .= '</select></div>' . LF;
 		unset($parentObject);
 		return $select;
+	}
+
+	/**
+	 * @return ConfigurationService
+	 */
+	protected function getConfigurationService() {
+		/** @var ConfigurationService $contentService */
+		$contentService = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')
+			->get('FluidTYPO3\Fluidcontent\Service\ConfigurationService');
+		return $contentService;
 	}
 
 }
