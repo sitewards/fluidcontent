@@ -132,7 +132,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		$cache = $this->manager->getCache('fluidcontent');
 		$hasCache = $cache->has('pageTsConfig');
 		if (TRUE === $hasCache) {
-			return;
+			return NULL;
 		}
 		$templates = $this->getAllRootTypoScriptTemplates();
 		$paths = $this->getPathConfigurationsFromRootTypoScriptTemplates($templates);

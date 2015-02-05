@@ -11,6 +11,7 @@ namespace FluidTYPO3\Fluidcontent\Tests\Unit\Service;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -107,6 +108,43 @@ class ConfigurationServiceTest extends UnitTestCase {
 		return array(
 			array('foo bar', 'foo-bar')
 		);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testGetContentElementFormInstances() {
+		$class = substr(str_replace('Tests\\Unit\\', '', get_class($this)), 0, -4);
+		$mock = $this->getMock($class, array('getContentConfiguration', 'message'));
+		$mock->injectObjectManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
+		$mock->expects($this->once())->method('getContentConfiguration')->willReturn(array(
+			'fluidcontent' => array(
+				'templateRootPath' => 'EXT:fluidcontent/Tests/Fixtures/Templates/'
+			)
+		));
+		$mock->expects($this->exactly(2))->method('message');
+		$result = $mock->getContentElementFormInstances();
+		$this->assertInstanceOf('FluidTYPO3\\Flux\\Form', $result['fluidcontent']['fluidcontent_DummyContent_html']);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testBuildAllWizardTabGroups() {
+		$class = substr(str_replace('Tests\\Unit\\', '', get_class($this)), 0, -4);
+		$mock = $this->getMock($class, array('getContentConfiguration', 'message'));
+		$mock->injectObjectManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
+		$paths = array(
+			'fluidcontent' => array(
+				'templateRootPath' => 'EXT:fluidcontent/Tests/Fixtures/Templates/'
+			)
+		);
+		$mock->expects($this->once())->method('getContentConfiguration')->willReturn($paths);
+		$mock->expects($this->exactly(2))->method('message');
+		$result = $this->callInaccessibleMethod($mock, 'buildAllWizardTabGroups', $paths);
+		$this->assertArrayHasKey('Content', $result);
+		$this->assertEquals('Content', $result['Content']['title']);
+		$this->assertArrayHasKey('fluidcontent_DummyContent_html', $result['Content']['elements']);
 	}
 
 }
