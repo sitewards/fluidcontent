@@ -10,6 +10,7 @@ namespace FluidTYPO3\Fluidcontent\Tests\Unit\Provider;
 
 use FluidTYPO3\Fluidcontent\Provider\ContentProvider;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -49,7 +50,7 @@ class ContentProviderTest extends UnitTestCase {
 	/**
 	 * @dataProvider getTemplatePathAndFilenameTestValues
 	 * @param array $record
-	 * @param $expected
+	 * @param string $expected
 	 */
 	public function testGetTemplatePathAndFilename(array $record, $expected) {
 		$instance = $this->createProviderInstance();
@@ -64,6 +65,47 @@ class ContentProviderTest extends UnitTestCase {
 		return array(
 			array(array('uid' => 0), NULL),
 			array(array('tx_fed_fcefile' => 'test:test'), NULL),
+		);
+	}
+
+	/**
+	 * @dataProvider getTemplatePathAndFilenameOverrideTestValues
+	 * @param string $template
+	 * @param string $expected
+	 */
+	public function testGetTemplatePathAndFilenameWithOverride($template, $expected) {
+		$instance = $this->createProviderInstance();
+		$instance->setTemplatePathAndFilename($template);
+		$result = $instance->getTemplatePathAndFilename(array());
+		$this->assertEquals($expected, $result);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getTemplatePathAndFilenameOverrideTestValues() {
+		$path = ExtensionManagementUtility::extPath('fluidcontent');
+		return array(
+			array(
+				'EXT:fluidcontent/Resources/Private/Templates/Content/Render.html',
+				$path . 'Resources/Private/Templates/Content/Render.html',
+			),
+			array(
+				$path . 'Resources/Private/Templates/Content/Render.html',
+				$path . 'Resources/Private/Templates/Content/Render.html',
+			),
+			array(
+				'EXT:fluidcontent/Resources/Private/Templates/Content/Error.html',
+				$path . 'Resources/Private/Templates/Content/Error.html',
+			),
+			array(
+				$path . 'Resources/Private/Templates/Content/Error.html',
+				$path . 'Resources/Private/Templates/Content/Error.html',
+			),
+			array(
+				$path . '/Does/Not/Exist.html',
+				NULL,
+			)
 		);
 	}
 

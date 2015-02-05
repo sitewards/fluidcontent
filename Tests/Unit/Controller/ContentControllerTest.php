@@ -36,4 +36,32 @@ class ContentControllerTest extends UnitTestCase {
 		$this->assertInstanceOf('FluidTYPO3\\Fluidcontent\\Controller\\ContentController', $instance);
 	}
 
+	public function testInitializeView() {
+		$instance = $this->getMock(
+			'FluidTYPO3\\Fluidcontent\\Controller\\ContentController',
+			array(
+				'getRecord', 'initializeProvider', 'initializeSettings', 'initializeOverriddenSettings',
+				'initializeViewObject', 'initializeViewVariables'
+			)
+		);
+		$configurationManager = $this->getMock(
+			'TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager',
+			array('getContentObject', 'getConfiguration')
+		);
+		$contentObject = new \stdClass();
+		$configurationManager->expects($this->once())->method('getContentObject')->willReturn($contentObject);
+		$configurationManager->expects($this->once())->method('getConfiguration')->willReturn(array('foo' => 'bar'));
+		$instance->expects($this->once())->method('getRecord')->willReturn(array('uid' => 0));
+		$GLOBALS['TSFE'] = (object) array('page' => 'page', 'fe_user' => (object) array('user' => 'user'));
+		$view = $this->getMock('TYPO3\\CMS\\Fluid\\View\\StandaloneView', array('assign'));
+		$instance->injectConfigurationManager($configurationManager);
+		$view->expects($this->at(0))->method('assign')->with('page', 'page');
+		$view->expects($this->at(1))->method('assign')->with('user', 'user');
+		$view->expects($this->at(2))->method('assign')->with('record', array('uid' => 0));
+		$view->expects($this->at(3))->method('assign')->with('contentObject', $contentObject);
+		$view->expects($this->at(4))->method('assign')->with('cookies', $_COOKIE);
+		$view->expects($this->at(5))->method('assign')->with('session', $_SESSION);
+		$instance->initializeView($view);
+	}
+
 }
