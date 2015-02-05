@@ -85,6 +85,9 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	public function getTemplatePathAndFilename(array $row) {
 		if (FALSE === empty($this->templatePathAndFilename)) {
 			$templatePathAndFilename = $this->templatePathAndFilename;
+			if ('/' !== $templatePathAndFilename{0}) {
+				$templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
+			}
 			if (TRUE === file_exists($templatePathAndFilename)) {
 				return $templatePathAndFilename;
 			}
