@@ -74,7 +74,7 @@ class WizardItemsHookSubscriber implements NewContentElementWizardHookInterface 
 
 	/**
 	 * @param array $items
-	 * @param \TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController
+	 * @param NewContentElementController $parentObject
 	 * @return void
 	 */
 	public function manipulateWizardItems(&$items, &$parentObject) {
