@@ -8,7 +8,9 @@ namespace FluidTYPO3\Fluidcontent\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
+use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Provider\Provider;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
@@ -37,6 +39,99 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 		$instance = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
 			->get('FluidTYPO3\\Fluidcontent\\Hooks\\WizardItemsHookSubscriber');
 		$this->assertInstanceOf('FluidTYPO3\\Fluidcontent\\Hooks\\WizardItemsHookSubscriber', $instance);
+	}
+
+	/**
+	 * @dataProvider getTestElementsWhiteAndBlackListsAndExpectedList
+	 * @test
+	 * @param array $items
+	 * @param string $whitelist
+	 * @param string $blacklist
+	 * @param array $expectedList
+	 */
+	public function processesWizardItems($items, $whitelist, $blacklist, $expectedList) {
+		$objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		$instance = $objectManager->get('FluidTYPO3\\Fluidcontent\\Hooks\\WizardItemsHookSubscriber');
+		$emulatedPageAndContentRecord = array('uid' => 1, 'tx_flux_column' => 'name');
+		$controller = new NewContentElementController();
+		$controller->colPos = 0;
+		$controller->uid_pid = -1;
+		$grid = new Grid();
+		$row = new Row();
+		$column = new Column();
+		$column->setColumnPosition(0);
+		$column->setName('name');
+		$column->setVariable('Fluidcontent', array(
+			'allowedContentTypes' => $whitelist,
+			'deniedContentTypes' => $blacklist
+		));
+		$row->add($column);
+		$grid->add($row);
+		$provider1 = $objectManager->get('FluidTYPO3\\Flux\\Provider\\Provider');
+		$provider1->setTemplatePaths(array());
+		$provider1->setTemplateVariables(array());
+		$provider1->setGrid($grid);
+		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getGrid'));
+		$provider2->expects($this->exactly(1))->method('getGrid')->will($this->returnValue(NULL));
+		$configurationService = $this->getMock(
+			'FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService',
+			array('resolveConfigurationProviders', 'writeCachedConfigurationIfMissing')
+		);
+		$configurationService->expects($this->exactly(1))->method('resolveConfigurationProviders')
+			->will($this->returnValue(array($provider1, $provider2)));
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
+		$recordService->expects($this->exactly(2))->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
+		$instance->injectConfigurationService($configurationService);
+		$instance->injectRecordService($recordService);
+		$instance->manipulateWizardItems($items, $controller);
+		$this->assertEquals($expectedList, $items);
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getTestElementsWhiteAndBlackListsAndExpectedList() {
+		$items = array(
+			'plugins' => array('title' => 'Nice header'),
+			'plugins_test1' => array(
+				'tt_content_defValues' => array('CType' => 'fluidcontent_content', 'tx_fed_fcefile' => 'test1:test1')
+			),
+			'plugins_test2' => array(
+				'tt_content_defValues' => array('CType' => 'fluidcontent_content', 'tx_fed_fcefile' => 'test2:test2')
+			)
+		);
+		return array(
+			array(
+				$items,
+				NULL,
+				NULL,
+				$items,
+			),
+			array(
+				$items,
+				'test1:test1',
+				NULL,
+				array(
+					'plugins' => array('title' => 'Nice header'),
+					'plugins_test1' => $items['plugins_test1']
+				),
+			),
+			array(
+				$items,
+				NULL,
+				'test1:test1',
+				array(
+					'plugins' => array('title' => 'Nice header'),
+					'plugins_test2' => $items['plugins_test2']
+				),
+			),
+			array(
+				$items,
+				'test1:test1',
+				'test1:test1',
+				array(),
+			),
+		);
 	}
 
 	public function testManipulateWizardItemsCallsExpectedMethodSequenceWithoutProviders() {
