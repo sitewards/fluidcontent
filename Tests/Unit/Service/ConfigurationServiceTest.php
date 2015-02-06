@@ -27,6 +27,13 @@ class ConfigurationServiceTest extends UnitTestCase {
 		$service->injectConfigurationManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
 			->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface'));
 		$result = $service->getContentConfiguration();
+		$this->assertEquals(array(
+			'FluidTYPO3.Fluidcontent' => array(
+				'templateRootPath' => 'EXT:fluidcontent/Resources/Private/Templates',
+				'partialRootPath' => 'EXT:fluidcontent/Resources/Private/Partials',
+				'layoutRootPath' => 'EXT:fluidcontent/Resources/Private/Layouts',
+			)
+		), $result);
 	}
 
 	public function testWriteCachedConfigurationIfMissing() {
@@ -219,13 +226,6 @@ class ConfigurationServiceTest extends UnitTestCase {
 		$this->callInaccessibleMethod($instance, 'overrideCurrentPageUidForConfigurationManager', 1);
 		$this->callInaccessibleMethod($instance, 'backupPageUidForConfigurationManager');
 		$this->callInaccessibleMethod($instance, 'restorePageUidForConfigurationManager');
-	}
-
-	/**
-	 * @return void
-	 */
-	public function testGetPathConfigurationsFromRootTypoScriptTemplates() {
-
 	}
 
 }
