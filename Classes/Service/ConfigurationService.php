@@ -93,71 +93,55 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @api
 	 */
 	public function getContentConfiguration($extensionName = NULL) {
-		$cacheKey = NULL === $extensionName ? 0 : $extensionName;
-		$cacheKey = 'content_' . $cacheKey;
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
+		if (NULL !== $extensionName) {
+			return $this->getViewConfigurationForExtensionName($extensionName);
 		}
-		$newLocation = (array) $this->getTypoScriptSubConfiguration($extensionName, 'collections', 'fluidcontent');
-		$oldLocation = (array) $this->getTypoScriptSubConfiguration($extensionName, 'fce', 'fed');
-		$merged = RecursiveArrayUtility::mergeRecursiveOverrule($oldLocation, $newLocation);
-		$registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Content');
-		if (NULL === $extensionName) {
-			foreach ($registeredExtensionKeys as $registeredExtensionKey) {
-				$nativeViewLocation = $this->getContentConfiguration($registeredExtensionKey);
-				if (FALSE === isset($nativeViewLocation['extensionKey'])) {
-					$nativeViewLocation['extensionKey'] = ExtensionNamingUtility::getExtensionKey($registeredExtensionKey);
-				}
-				self::$cache[$registeredExtensionKey] = $nativeViewLocation;
-				$merged[$registeredExtensionKey] = $nativeViewLocation;
-			}
-		} else {
-			$nativeViewLocation = $this->getViewConfigurationForExtensionName($extensionName);
-			if (TRUE === is_array($nativeViewLocation)) {
-				$merged = RecursiveArrayUtility::mergeRecursiveOverrule($nativeViewLocation, $merged);
-			}
-			if (FALSE === isset($merged['extensionKey'])) {
-				$merged['extensionKey'] = ExtensionNamingUtility::getExtensionKey($extensionName);
-			}
+		$registeredExtensionKeys = (array) Core::getRegisteredProviderExtensionKeys('Content');
+		$configuration = array();
+		foreach ($registeredExtensionKeys as $registeredExtensionKey) {
+			$configuration[$registeredExtensionKey] = $this->getContentConfiguration($registeredExtensionKey);
 		}
-		self::$cache[$cacheKey] = $merged;
-		return $merged;
+		return $configuration;
 	}
 
 	/**
-	 * @return NULL
+	 * @return void
 	 */
 	public function writeCachedConfigurationIfMissing() {
 		/** @var StringFrontend $cache */
 		$cache = $this->manager->getCache('fluidcontent');
 		$hasCache = $cache->has('pageTsConfig');
-		if (TRUE === $hasCache) {
-			return NULL;
+		if (FALSE === $hasCache) {
+			$pageTsConfig = '';
+			$templates = $this->getAllRootTypoScriptTemplates();
+			foreach ($templates as $template) {
+				$pageUid = (integer) $template['pid'];
+				$pageTsConfig .= $this->renderPageTypoScriptForPageUid($pageUid);
+			}
+			$cache->set('pageTsConfig', $pageTsConfig, array(), 806400);
 		}
-		$templates = $this->getAllRootTypoScriptTemplates();
-		$paths = $this->getPathConfigurationsFromRootTypoScriptTemplates($templates);
-		$pageTsConfig = '';
-		$this->backupPageUidForConfigurationManager();
+	}
 
-		foreach ($paths as $pageUid => $collection) {
-			if (FALSE === $collection) {
-				continue;
-			}
-			try {
-				$this->overrideCurrentPageUidForConfigurationManager($pageUid);
-				$wizardTabs = $this->buildAllWizardTabGroups($collection);
-				$collectionPageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
-				$pageTsConfig .= '[PIDinRootline = ' . strval($pageUid) . ']' . LF;
-				$pageTsConfig .= $collectionPageTsConfig . LF;
-				$pageTsConfig .= '[GLOBAL]' . LF;
-				$this->message('Built content setup for page ' . $pageUid, GeneralUtility::SYSLOG_SEVERITY_INFO, 'Fluidcontent');
-			} catch (\Exception $error) {
-				$this->debug($error);
-			}
+	/**
+	 * @param $pageUid
+	 * @return string
+	 */
+	protected function renderPageTypoScriptForPageUid($pageUid) {
+		$this->backupPageUidForConfigurationManager();
+		$this->overrideCurrentPageUidForConfigurationManager($pageUid);
+		try {
+			$collection = $this->getContentConfiguration();
+			$wizardTabs = $this->buildAllWizardTabGroups($collection);
+			$collectionPageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
+			$pageTsConfig .= '[PIDinRootline = ' . strval($pageUid) . ']' . LF;
+			$pageTsConfig .= $collectionPageTsConfig . LF;
+			$pageTsConfig .= '[GLOBAL]' . LF;
+			$this->message('Built content setup for page ' . $pageUid, GeneralUtility::SYSLOG_SEVERITY_INFO, 'Fluidcontent');
+		} catch (\RuntimeException $error) {
+			$this->debug($error);
 		}
 		$this->restorePageUidForConfigurationManager();
-		$cache->set('pageTsConfig', $pageTsConfig, array(), 806400);
-		return NULL;
+		return $pageTsConfig;
 	}
 
 	/**
@@ -186,47 +170,6 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		if (TRUE === $this->configurationManager instanceof ConfigurationManager) {
 			$this->configurationManager->setCurrentPageUid($this->pageUidBackup);
 		}
-	}
-
-	/**
-	 * Gets a collection of path configurations for content elements
-	 * based on each root TypoScript template in the provided array
-	 * of templates. Returns an array of paths indexed by the root
-	 * page UID.
-	 *
-	 * @param array $templates
-	 * @return array
-	 */
-	protected function getPathConfigurationsFromRootTypoScriptTemplates($templates) {
-		$allTemplatePaths = array();
-		$registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Content');
-		foreach ($templates as $templateRecord) {
-			$pageUid = $templateRecord['pid'];
-			/** @var \TYPO3\CMS\Core\TypoScript\ExtendedTemplateService $template */
-			$template = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\TypoScript\\ExtendedTemplateService');
-			$template->tt_track = 0;
-			$template->init();
-			/** @var \TYPO3\CMS\Frontend\Page\PageRepository $sys_page */
-			$sys_page = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
-			$rootLine = $sys_page->getRootLine($pageUid);
-			$template->runThroughTemplates($rootLine);
-			$template->generateConfig();
-			$oldTemplatePathLocation = (array) $template->setup['plugin.']['tx_fed.']['fce.'];
-			$newTemplatePathLocation = (array) $template->setup['plugin.']['tx_fluidcontent.']['collections.'];
-			$registeredPathCollections = array();
-			foreach ($registeredExtensionKeys as $registeredExtensionKey) {
-				$nativeViewLocation = $this->getContentConfiguration($registeredExtensionKey);
-				if (FALSE === isset($nativeViewLocation['extensionKey'])) {
-					$nativeViewLocation['extensionKey'] = ExtensionNamingUtility::getExtensionKey($registeredExtensionKey);
-				}
-				$registeredPathCollections[$registeredExtensionKey] = $nativeViewLocation;
-			}
-			$merged = RecursiveArrayUtility::mergeRecursiveOverrule($oldTemplatePathLocation, $newTemplatePathLocation);
-			$merged = GeneralUtility::removeDotsFromTS($merged);
-			$merged = RecursiveArrayUtility::merge($merged, $registeredPathCollections);
-			$allTemplatePaths[$pageUid] = $merged;
-		}
-		return $allTemplatePaths;
 	}
 
 	/**
