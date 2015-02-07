@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2559444bad801d3fe62983fd092328af",
+    "hash": "7733721c86eb9d30005edf259a37dbd7",
     "packages": [
         {
             "name": "fluidtypo3/flux",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FluidTYPO3/flux.git",
-                "reference": "a11d0e680779975c1fd45f23ee3fa30917500a3d"
+                "reference": "ea63294db12ed7b9416437546a7cece4044b6f8a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FluidTYPO3/flux/zipball/a11d0e680779975c1fd45f23ee3fa30917500a3d",
-                "reference": "a11d0e680779975c1fd45f23ee3fa30917500a3d",
+                "url": "https://api.github.com/repos/FluidTYPO3/flux/zipball/ea63294db12ed7b9416437546a7cece4044b6f8a",
+                "reference": "ea63294db12ed7b9416437546a7cece4044b6f8a",
                 "shasum": ""
             },
             "require-dev": {
@@ -30,13 +30,18 @@
                 "fluidtypo3/vhs": "ViewHelper library for Fluid templates."
             },
             "type": "typo3-cms-extension",
+            "autoload": {
+                "psr-4": {
+                    "FluidTYPO3\\Flux\\": "Classes/"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "GPL-2.0+"
             ],
             "description": "The flux package from FluidTYPO3",
             "homepage": "http://fluidtypo3.org",
-            "time": "2015-02-05 23:37:39"
+            "time": "2015-02-07 13:20:19"
         }
     ],
     "packages-dev": [
