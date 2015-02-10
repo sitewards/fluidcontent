@@ -229,6 +229,8 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			$templateRootPath = rtrim($paths['templateRootPath'], '/') . '/';
 			if (TRUE === file_exists($templateRootPath . 'Content/')) {
 				$templateRootPath = $templateRootPath . 'Content/';
+			} else {
+				continue;
 			}
 			$templateRootPathLength = strlen($templateRootPath);
 			$files = array();
