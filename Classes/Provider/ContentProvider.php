@@ -14,6 +14,7 @@ use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
+use FluidTYPO3\Flux\View\TemplatePaths;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
@@ -100,7 +101,8 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 		list (, $filename) = explode(':', $templatePathAndFilename);
 		list ($controllerAction, $format) = explode('.', $filename);
 		$paths = $this->getTemplatePaths($row);
-		$templatePathAndFilename = ResolveUtility::resolveTemplatePathAndFilenameByPathAndControllerNameAndActionAndFormat($paths, 'Content', $controllerAction, $format);
+		$templatePaths = new TemplatePaths($paths);
+		$templatePathAndFilename = $templatePaths->resolveTemplateFileForControllerAndActionAndFormat('Content', $controllerAction, $format);
 		return $templatePathAndFilename;
 	}
 

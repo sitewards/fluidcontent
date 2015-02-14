@@ -11,6 +11,8 @@ namespace FluidTYPO3\Fluidcontent\Service;
 use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
 use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -221,35 +223,35 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	public function getContentElementFormInstances() {
 		$elements = array();
 		$allTemplatePaths = $this->getContentConfiguration();
+		$controllerName = 'Content';
 		foreach ($allTemplatePaths as $registeredExtensionKey => $templatePathSet) {
-			$paths = PathUtility::translatePath($templatePathSet);
-			$registeredExtensionKey = trim($registeredExtensionKey, '.');
+			$files = array();
 			$extensionKey = TRUE === isset($templatePathSet['extensionKey']) ? $templatePathSet['extensionKey'] : $registeredExtensionKey;
 			$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
-			$templateRootPath = rtrim($paths['templateRootPath'], '/') . '/';
-			if (TRUE === file_exists($templateRootPath . 'Content/')) {
-				$templateRootPath = $templateRootPath . 'Content/';
-			} else {
-				continue;
-			}
-			$templateRootPathLength = strlen($templateRootPath);
-			$files = array();
-			$files = GeneralUtility::getAllFilesAndFoldersInPath($files, $templateRootPath, 'html');
-			if (0 < count($files)) {
-				foreach ($files as $templateFilename) {
-					$fileRelPath = substr($templateFilename, $templateRootPathLength);
-					$form = $this->getFormFromTemplateFile($templateFilename, 'Configuration', 'form', $paths, $extensionKey);
-					if (TRUE === empty($form)) {
-						$this->sendDisabledContentWarning($templateFilename);
-						continue;
+			$templatePaths = new TemplatePaths($templatePathSet);
+			$viewContext = new ViewContext(NULL, $extensionKey);
+			$viewContext->setTemplatePaths($templatePaths);
+			$viewContext->setSectionName('Configuration');
+			foreach ($templatePaths->getTemplateRootPaths() as $templateRootPath) {
+				$files = GeneralUtility::getAllFilesAndFoldersInPath($files, $templateRootPath . '/' . $controllerName, 'html');
+				if (0 < count($files)) {
+					foreach ($files as $templateFilename) {
+						$actionName = pathinfo($templateFilename, PATHINFO_FILENAME);
+						$fileRelPath = $actionName . '.html';
+						$viewContext->setTemplatePathAndFilename($templateFilename);
+						$form = $this->getFormFromTemplateFile($viewContext);
+						if (TRUE === empty($form)) {
+							$this->sendDisabledContentWarning($templateFilename);
+							continue;
+						}
+						if (FALSE === $form->getEnabled()) {
+							$this->sendDisabledContentWarning($templateFilename);
+							continue;
+						}
+						$id = preg_replace('/[\.\/]/', '_', $registeredExtensionKey . '/' . $actionName . '.html');
+						$form->setOption('contentElementId', $registeredExtensionKey . ':' . $fileRelPath);
+						$elements[$registeredExtensionKey][$id] = $form;
 					}
-					if (FALSE === $form->getEnabled()) {
-						$this->sendDisabledContentWarning($templateFilename);
-						continue;
-					}
-					$id = preg_replace('/[\.\/]/', '_', $registeredExtensionKey . '_' . $fileRelPath);
-					$form->setOption('contentElementId', $registeredExtensionKey . ':' . $fileRelPath);
-					$elements[$registeredExtensionKey][$id] = $form;
 				}
 			}
 		}

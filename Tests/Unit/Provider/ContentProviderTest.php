@@ -64,7 +64,7 @@ class ContentProviderTest extends UnitTestCase {
 	public function getTemplatePathAndFilenameTestValues() {
 		return array(
 			array(array('uid' => 0), NULL),
-			array(array('tx_fed_fcefile' => 'test:test'), NULL),
+			array(array('tx_fed_fcefile' => 'test:Test.html'), NULL),
 		);
 	}
 
