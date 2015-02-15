@@ -42,7 +42,7 @@ class ContentSelector {
 					$selectedIcon = $form->getOption(Form::OPTION_ICON);
 				}
 				$label = $form->getLabel();
-				$label = (0 === strpos($label, 'LLL:') ? $GLOBALS['LANG']->sL($label) : $label);;
+				$label = (0 === strpos($label, 'LLL:') ? $GLOBALS['LANG']->sL($label) : $label);
 				$option .= '<option ' .
 					'style="background:#fff url(' . $form->getOption(Form::OPTION_ICON) . ') 2px 50% / 16px 16px no-repeat; height: 16px; padding-top: 2px; padding-left: 22px;" ' .
 					'value="' . htmlspecialchars($optionValue) . '"' . $selected . '>' . htmlspecialchars($label) . '</option>' . LF;
