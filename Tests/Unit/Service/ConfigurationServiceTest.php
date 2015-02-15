@@ -29,9 +29,9 @@ class ConfigurationServiceTest extends UnitTestCase {
 		$result = $service->getContentConfiguration();
 		$this->assertEquals(array(
 			'FluidTYPO3.Fluidcontent' => array(
-				'templateRootPath' => 'EXT:fluidcontent/Resources/Private/Templates',
-				'partialRootPath' => 'EXT:fluidcontent/Resources/Private/Partials',
-				'layoutRootPath' => 'EXT:fluidcontent/Resources/Private/Layouts',
+				'templateRootPaths' => array('EXT:fluidcontent/Resources/Private/Templates'),
+				'partialRootPaths' => array('EXT:fluidcontent/Resources/Private/Partials'),
+				'layoutRootPaths' => array('EXT:fluidcontent/Resources/Private/Layouts'),
 			)
 		), $result);
 	}
