@@ -3,11 +3,14 @@ if (!defined ('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
-\FluidTYPO3\Flux\Core::unregisterConfigurationProvider('Tx_Fed_Provider_Configuration_ContentObjectConfigurationProvider');
 \FluidTYPO3\Flux\Core::registerConfigurationProvider('FluidTYPO3\Fluidcontent\Provider\ContentProvider');
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(array('Fluid Content', 'fluidcontent_content', \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('fluidcontent') . 'ext_icon.gif'), 'CType');
-//\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addStaticFile($_EXTKEY, 'Configuration/TypoScript', 'Fluid Content'); // Disabled temporarily: fluidcontent currently does not use TS configuration.
+\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(array(
+	'Fluid Content',
+	'fluidcontent_content',
+	\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extRelPath('fluidcontent') . 'ext_icon.gif'
+), \TYPO3\CMS\Extbase\Utility\ExtensionUtility::PLUGIN_TYPE_CONTENT_ELEMENT, 'FluidTYPO3.Fluidcontent');
+
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', array(
 	'tx_fed_fcefile' => array (
 		'exclude' => 1,

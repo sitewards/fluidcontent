@@ -4,7 +4,7 @@ if (!defined ('TYPO3_MODE')) {
 }
 
 \TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin(
-	$_EXTKEY,
+	'FluidTYPO3.Fluidcontent',
 	'Content',
 	array(
 		'Content' => 'render',
