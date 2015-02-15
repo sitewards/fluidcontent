@@ -73,7 +73,7 @@ class ContentSelectorTest extends UnitTestCase {
 		);
 		$parameters = array(
 			'itemFormElName' => 'foobar',
-			'itemFormElValue' => 'foovalue'
+			'itemFormElValue' => 'test2'
 		);
 		$parent = 'unused';
 		$configurationService->expects($this->once())->method('getContentElementFormInstances')->willReturn($forms);
