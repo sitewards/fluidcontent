@@ -81,8 +81,9 @@ class ContentSelectorTest extends UnitTestCase {
 		$instance->expects($this->once())->method('getConfigurationService')->willReturn($configurationService);
 		$rendered = $instance->renderField($parameters, $parent);
 		$this->assertContains('<optgroup label="myextension">', $rendered);
-		$this->assertContains('<option value="test1">Test1</option>', $rendered);
-		$this->assertContains('<option value="test2">Test2</option>', $rendered);
+		$this->assertContains('<option', $rendered);
+		$this->assertContains('value="test1"', $rendered);
+		$this->assertContains('value="test2"', $rendered);
 	}
 
 }
