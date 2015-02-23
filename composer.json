@@ -4,15 +4,15 @@
     "require": {
         "fluidtypo3/flux": "*"
     },
-	"require-dev": {
-		"fluidtypo3/development": "*",
-		"fluidtypo3/flux": "dev-development"
-	},
-	"autoload": {
-		"psr-4": {
-			"FluidTYPO3\\Fluidcontent\\": "Classes/"
-		}
-	},
+    "require-dev": {
+        "fluidtypo3/development": "*",
+        "fluidtypo3/flux": "dev-development"
+    },
+    "autoload": {
+        "psr-4": {
+            "FluidTYPO3\\Fluidcontent\\": "Classes/"
+        }
+    },
     "type": "typo3-cms-extension",
     "keywords": ["TYPO3 CMS", "templating", "bootstrap", "flux", "fluidcontent", "fedext", "fluid"],
     "homepage": "https://fluidtypo3.org",
@@ -24,5 +24,11 @@
     },
     "suggest": {
         "fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid."
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/TYPO3/TYPO3.CMS"
+        }
+    ]
 }
