@@ -22,7 +22,7 @@ class ContentSelector {
 	 * @var array
 	 */
 	protected $templates = array(
-		'select' =>	'<div class="form-control-wrap"><div class="input-group">
+		'select' => '<div class="form-control-wrap"><div class="input-group">
 			<div class="input-group-addon input-group-icon t3js-formengine-select-prepend"><img src="%s" alt="" /></div>
 			<select name="%s" class="form-control form-control-adapt"
 				onchange="if (confirm(TBE_EDITOR.labels.onChangeAlert)

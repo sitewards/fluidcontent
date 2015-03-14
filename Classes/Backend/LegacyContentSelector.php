@@ -19,7 +19,7 @@ class LegacyContentSelector extends ContentSelector {
 	 * @var array
 	 */
 	protected $templates = array(
-		'select' =>	'<div><select
+		'select' => '<div><select
 			style="background: #fff url(%s) 5px 50%% / 16px 16px no-repeat; padding-top: 2px; padding-left: 24px;"
 			name="%s"
 			class="formField select"
