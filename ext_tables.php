@@ -22,7 +22,7 @@ if (!defined ('TYPO3_MODE')) {
 				: 'FluidTYPO3\Fluidcontent\Backend\ContentSelector->renderField',
 		)
 	),
-), 1);
+));
 
 $GLOBALS['TCA']['tt_content']['types']['fluidcontent_content']['showitem'] = $GLOBALS['TCA']['tt_content']['types']['text']['showitem'];
 // Remove bodytext RTE with TCA pointing to locallang file in xlf format
