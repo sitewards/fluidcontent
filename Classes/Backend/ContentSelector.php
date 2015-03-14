@@ -9,6 +9,7 @@ namespace FluidTYPO3\Fluidcontent\Backend;
  */
 
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use FluidTYPO3\Flux\Form;
 
@@ -16,6 +17,24 @@ use FluidTYPO3\Flux\Form;
  * Class that renders a selection field for Fluid FCE template selection
  */
 class ContentSelector {
+
+	/**
+	 * @var array
+	 */
+	protected $templates = array(
+		'select' =>	'<div class="form-control-wrap"><div class="input-group">
+			<div class="input-group-addon input-group-icon t3js-formengine-select-prepend"><img src="%s" alt="" /></div>
+			<select name="%s" class="form-control form-control-adapt"
+				onchange="if (confirm(TBE_EDITOR.labels.onChangeAlert)
+					&& TBE_EDITOR.checkSubmit(-1)){ TBE_EDITOR.submitForm() };">
+				%s
+			</select>
+			</div>
+			</div>',
+		'option' => '<option data-icon="%s" value="%s"%s>%s</option>',
+		'optionEmpty' => '<option value="">%s</option>',
+		'optgroup' => '<optgroup label="%s">%s</optgroup>'
+	);
 
 	/**
 	 * Render a Flexible Content Element type selection field
@@ -29,33 +48,70 @@ class ContentSelector {
 		$setup = $contentService->getContentElementFormInstances();
 		$name = $parameters['itemFormElName'];
 		$value = $parameters['itemFormElValue'];
-		$selectedIcon = '';
-		$option = '<option value="">' . $GLOBALS['LANG']->sL('LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile', TRUE) . '</option>' . LF;
+		$selectedIcon = $this->getSelectedIcon($setup, $value);
+		$options = $this->renderEmptyOption();
 		foreach ($setup as $groupLabel => $configuration) {
-			$option .= '<optgroup label="' . htmlspecialchars($groupLabel) . '">' . LF;
+			$options .= $this->renderOptionGroup($configuration, $groupLabel, $value);
+		}
+		return $this->wrapSelector($options, $name, $selectedIcon);
+	}
+
+	/**
+	 * @param array $setup
+	 * @param mixed $value
+	 * @return NULL|string
+	 */
+	protected function getSelectedIcon(array $setup, $value) {
+		foreach ($setup as $configuration) {
 			foreach ($configuration as $form) {
-				/** @var Form $form */
-				$selected = '';
 				$optionValue = $form->getOption('contentElementId');
 				if ($optionValue === $value) {
-					$selected = ' selected="selected"';
-					$selectedIcon = $form->getOption(Form::OPTION_ICON);
+					return MiscellaneousUtility::getIconForTemplate($form);
 				}
-				$label = $form->getLabel();
-				$label = (0 === strpos($label, 'LLL:') ? $GLOBALS['LANG']->sL($label) : $label);
-				$option .= '<option ' .
-					'style="background:#fff url(' . $form->getOption(Form::OPTION_ICON) . ') 2px 50% / 16px 16px no-repeat; height: 16px; padding-top: 2px; padding-left: 22px;" ' .
-					'value="' . htmlspecialchars($optionValue) . '"' . $selected . '>' . htmlspecialchars($label) . '</option>' . LF;
 			}
-			$option .= '</optgroup>' . LF;
 		}
-		$select = '<div><select ' .
-			'style="background: #fff url(' . $selectedIcon . ') 5px 50% / 16px 16px no-repeat; padding-top: 2px; padding-left: 24px;" ' .
-			'name="' . htmlspecialchars($name) . '"  class="formField select" onchange="if (confirm(TBE_EDITOR.labels.onChangeAlert) && TBE_EDITOR.checkSubmit(-1)){ TBE_EDITOR.submitForm() };">' . LF;
-		$select .= $option;
-		$select .= '</select></div>' . LF;
-		unset($parentObject);
-		return $select;
+		return NULL;
+	}
+
+	/**
+	 * @param string $selector
+	 * @param string $name
+	 * @param string $selectedIcon
+	 * @return string
+	 */
+	protected function wrapSelector($selector, $name, $selectedIcon) {
+		return sprintf($this->templates['select'], $selectedIcon, htmlspecialchars($name), $selector);
+	}
+
+	/**
+	 * @param array $configuration
+	 * @param string $groupLabel
+	 * @param mixed $value
+	 * @return string
+	 */
+	protected function renderOptionGroup(array $configuration, $groupLabel, $value) {
+		foreach ($configuration as $form) {
+			/** @var Form $form */
+			$selected = ($optionValue === $value ? ' selected="selected"' : '');
+			$optionValue = $form->getOption('contentElementId');
+			$label = $form->getLabel();
+			$icon = MiscellaneousUtility::getIconForTemplate($form);
+			$label = (0 === strpos($label, 'LLL:') ? $GLOBALS['LANG']->sL($label) : $label);
+			$valueString = htmlspecialchars($optionValue);
+			$labelString = htmlspecialchars($label);
+			$optionGroup .= sprintf($this->templates['option'], $icon, $valueString, $selected, $labelString) . LF;
+		}
+		return sprintf($this->templates['optgroup'], htmlspecialchars($groupLabel), $optionGroup);
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function renderEmptyOption() {
+		return sprintf(
+			$this->templates['optionEmpty'],
+			$GLOBALS['LANG']->sL('LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile', TRUE)
+		);
 	}
 
 	/**

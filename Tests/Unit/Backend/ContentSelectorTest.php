@@ -53,7 +53,7 @@ class ContentSelectorTest extends UnitTestCase {
 		);
 		$parent = 'unused';
 		$rendered = $instance->renderField($parameters, $parent);
-		$this->assertStringStartsWith('<div><select', $rendered);
+		$this->assertStringStartsWith('<div', $rendered);
 		$this->assertContains($parameters['itemFormElName'], $rendered);
 	}
 

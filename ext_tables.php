@@ -17,7 +17,9 @@ if (!defined ('TYPO3_MODE')) {
 		'label' => 'LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile',
 		'config' => array (
 			'type' => 'user',
-			'userFunc' => 'FluidTYPO3\Fluidcontent\Backend\ContentSelector->renderField',
+			'userFunc' => TRUE === version_compare(TYPO3_version, '7.1', '<')
+				? 'FluidTYPO3\Fluidcontent\Backend\LegacyContentSelector->renderField'
+				: 'FluidTYPO3\Fluidcontent\Backend\ContentSelector->renderField',
 		)
 	),
 ), 1);
