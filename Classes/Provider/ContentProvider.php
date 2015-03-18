@@ -1,44 +1,25 @@
 <?php
 namespace FluidTYPO3\Fluidcontent\Provider;
-/*****************************************************************
- *  Copyright notice
+
+/*
+ * This file is part of the FluidTYPO3/Fluidcontent project under GPLv2 or later.
  *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 3 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- *****************************************************************/
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
 
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
-use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Provider\ContentProvider as FluxContentProvider;
-use FluidTYPO3\Flux\Utility\PathUtility;
+use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\ResolveUtility;
+use FluidTYPO3\Flux\View\TemplatePaths;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
 /**
  * Content object configuration provider
- *
- * @author Claus Due <claus@namelesscoder.net>
- * @package Fluidcontent
- * @subpackage Provider
  */
 class ContentProvider extends FluxContentProvider implements ProviderInterface {
 
@@ -73,17 +54,17 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	protected $configurationSectionName = 'Configuration';
 
 	/**
-	 * @var \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface
+	 * @var ConfigurationManagerInterface
 	 */
 	protected $configurationManager;
 
 	/**
-	 * @var \FluidTYPO3\Fluidcontent\Service\ConfigurationService
+	 * @var ConfigurationService
 	 */
 	protected $configurationService;
 
 	/**
-	 * @param \TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface $configurationManager
+	 * @param ConfigurationManagerInterface $configurationManager
 	 * @return void
 	 */
 	public function injectConfigurationManager(ConfigurationManagerInterface $configurationManager) {
@@ -91,7 +72,7 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	}
 
 	/**
-	 * @param \FluidTYPO3\Fluidcontent\Service\ConfigurationService $configurationService
+	 * @param ConfigurationService $configurationService
 	 * @return void
 	 */
 	public function injectConfigurationService(ConfigurationService $configurationService) {
@@ -104,20 +85,24 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 */
 	public function getTemplatePathAndFilename(array $row) {
 		if (FALSE === empty($this->templatePathAndFilename)) {
-			$templatePathAndFilename = GeneralUtility::getFileAbsFileName($this->templatePathAndFilename);
+			$templatePathAndFilename = $this->templatePathAndFilename;
+			if ('/' !== $templatePathAndFilename{0}) {
+				$templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
+			}
 			if (TRUE === file_exists($templatePathAndFilename)) {
 				return $templatePathAndFilename;
 			}
-		} else {
-			$templatePathAndFilename = $row['tx_fed_fcefile'];
-			if (FALSE === strpos($templatePathAndFilename, ':')) {
-				return NULL;
-			}
+			return NULL;
+		}
+		$templatePathAndFilename = $row['tx_fed_fcefile'];
+		if (FALSE === strpos($templatePathAndFilename, ':')) {
+			return NULL;
 		}
 		list (, $filename) = explode(':', $templatePathAndFilename);
 		list ($controllerAction, $format) = explode('.', $filename);
 		$paths = $this->getTemplatePaths($row);
-		$templatePathAndFilename = ResolveUtility::resolveTemplatePathAndFilenameByPathAndControllerNameAndActionAndFormat($paths, 'Content', $controllerAction, $format);
+		$templatePaths = new TemplatePaths($paths);
+		$templatePathAndFilename = $templatePaths->resolveTemplateFileForControllerAndActionAndFormat('Content', $controllerAction, $format);
 		return $templatePathAndFilename;
 	}
 
@@ -130,10 +115,8 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 		$paths = $this->configurationService->getContentConfiguration($extensionName);
 		if (TRUE === is_array($paths) && FALSE === empty($paths)) {
 			$paths = PathUtility::translatePath($paths);
-			return $paths;
 		}
-
-		return parent::getTemplatePaths($row);
+		return $paths;
 	}
 
 	/**
@@ -141,15 +124,15 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 * @return string
 	 */
 	public function getExtensionKey(array $row) {
+		$extensionKey = $this->extensionKey;
 		$action = $row['tx_fed_fcefile'];
 		if (FALSE !== strpos($action, ':')) {
 			$extensionName = array_shift(explode(':', $action));
 		}
 		if (FALSE === empty($extensionName)) {
 			$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
-			return $extensionKey;
 		}
-		return parent::getExtensionKey($row);
+		return $extensionKey;
 	}
 
 	/**

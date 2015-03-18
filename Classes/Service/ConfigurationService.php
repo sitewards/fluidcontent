@@ -1,36 +1,24 @@
 <?php
 namespace FluidTYPO3\Fluidcontent\Service;
-/***************************************************************
- *  Copyright notice
- *
- *  (c) 2014 Claus Due <claus@namelesscoder.net>
- *
- *  All rights reserved
- *
- *  This script is part of the TYPO3 project. The TYPO3 project is
- *  free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.
- *
- *  The GNU General Public License can be found at
- *  http://www.gnu.org/copyleft/gpl.html.
- *
- *  This script is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  This copyright notice MUST APPEAR in all copies of the script!
- ***************************************************************/
 
-use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
+/*
+ * This file is part of the FluidTYPO3/Fluidcontent project under GPLv2 or later.
+ *
+ * For the full copyright and license information, please read the
+ * LICENSE.md file that was distributed with this source code.
+ */
+
 use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
+use FluidTYPO3\Flux\View\TemplatePaths;
+use FluidTYPO3\Flux\View\ViewContext;
 use FluidTYPO3\Flux\Service\FluxService;
-use FluidTYPO3\Flux\Utility\PathUtility;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
+use FluidTYPO3\Flux\Utility\PathUtility;
+use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\StringFrontend;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -42,10 +30,6 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * Provides methods to read various configuration related
  * to Fluid Content Elements.
- *
- * @author Claus Due
- * @package Fluidcontent
- * @subpackage Service
  */
 class ConfigurationService extends FluxService implements SingletonInterface {
 
@@ -111,71 +95,55 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @api
 	 */
 	public function getContentConfiguration($extensionName = NULL) {
-		$cacheKey = NULL === $extensionName ? 0 : $extensionName;
-		$cacheKey = 'content_' . $cacheKey;
-		if (TRUE === isset(self::$cache[$cacheKey])) {
-			return self::$cache[$cacheKey];
+		if (NULL !== $extensionName) {
+			return $this->getViewConfigurationForExtensionName($extensionName);
 		}
-		$newLocation = (array) $this->getTypoScriptSubConfiguration($extensionName, 'collections', 'fluidcontent');
-		$oldLocation = (array) $this->getTypoScriptSubConfiguration($extensionName, 'fce', 'fed');
-		$merged = GeneralUtility::array_merge_recursive_overrule($oldLocation, $newLocation);
-		$registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Content');
-		if (NULL === $extensionName) {
-			foreach ($registeredExtensionKeys as $registeredExtensionKey) {
-				$nativeViewLocation = $this->getContentConfiguration($registeredExtensionKey);
-				if (FALSE === isset($nativeViewLocation['extensionKey'])) {
-					$nativeViewLocation['extensionKey'] = ExtensionNamingUtility::getExtensionKey($registeredExtensionKey);
-				}
-				self::$cache[$registeredExtensionKey] = $nativeViewLocation;
-				$merged[$registeredExtensionKey] = $nativeViewLocation;
-			}
-		} else {
-			$nativeViewLocation = $this->getViewConfigurationForExtensionName($extensionName);
-			if (TRUE === is_array($nativeViewLocation)) {
-				$merged = GeneralUtility::array_merge_recursive_overrule($nativeViewLocation, $merged);
-			}
-			if (FALSE === isset($merged['extensionKey'])) {
-				$merged['extensionKey'] = ExtensionNamingUtility::getExtensionKey($extensionName);
-			}
+		$registeredExtensionKeys = (array) Core::getRegisteredProviderExtensionKeys('Content');
+		$configuration = array();
+		foreach ($registeredExtensionKeys as $registeredExtensionKey) {
+			$configuration[$registeredExtensionKey] = $this->getContentConfiguration($registeredExtensionKey);
 		}
-		self::$cache[$cacheKey] = $merged;
-		return $merged;
+		return $configuration;
 	}
 
 	/**
-	 * @return NULL
+	 * @return void
 	 */
 	public function writeCachedConfigurationIfMissing() {
 		/** @var StringFrontend $cache */
 		$cache = $this->manager->getCache('fluidcontent');
 		$hasCache = $cache->has('pageTsConfig');
-		if (TRUE === $hasCache) {
-			return;
+		if (FALSE === $hasCache) {
+			$pageTsConfig = '';
+			$templates = $this->getAllRootTypoScriptTemplates();
+			foreach ($templates as $template) {
+				$pageUid = (integer) $template['pid'];
+				$pageTsConfig .= $this->renderPageTypoScriptForPageUid($pageUid);
+			}
+			$cache->set('pageTsConfig', $pageTsConfig, array(), 806400);
 		}
-		$templates = $this->getAllRootTypoScriptTemplates();
-		$paths = $this->getPathConfigurationsFromRootTypoScriptTemplates($templates);
-		$pageTsConfig = '';
-		$this->backupPageUidForConfigurationManager();
+	}
 
-		foreach ($paths as $pageUid => $collection) {
-			if (FALSE === $collection) {
-				continue;
-			}
-			try {
-				$this->overrideCurrentPageUidForConfigurationManager($pageUid);
-				$wizardTabs = $this->buildAllWizardTabGroups($collection);
-				$collectionPageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
-				$pageTsConfig .= '[PIDinRootline = ' . strval($pageUid) . ']' . LF;
-				$pageTsConfig .= $collectionPageTsConfig . LF;
-				$pageTsConfig .= '[GLOBAL]' . LF;
-				$this->message('Built content setup for page ' . $pageUid, GeneralUtility::SYSLOG_SEVERITY_INFO, 'Fluidcontent');
-			} catch (\Exception $error) {
-				$this->debug($error);
-			}
+	/**
+	 * @param $pageUid
+	 * @return string
+	 */
+	protected function renderPageTypoScriptForPageUid($pageUid) {
+		$this->backupPageUidForConfigurationManager();
+		$this->overrideCurrentPageUidForConfigurationManager($pageUid);
+		try {
+			$collection = $this->getContentConfiguration();
+			$wizardTabs = $this->buildAllWizardTabGroups($collection);
+			$collectionPageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
+			$pageTsConfig .= '[PIDinRootline = ' . strval($pageUid) . ']' . LF;
+			$pageTsConfig .= $collectionPageTsConfig . LF;
+			$pageTsConfig .= '[GLOBAL]' . LF;
+			$this->message('Built content setup for page ' . $pageUid, GeneralUtility::SYSLOG_SEVERITY_INFO, 'Fluidcontent');
+		} catch (\RuntimeException $error) {
+			$this->debug($error);
 		}
 		$this->restorePageUidForConfigurationManager();
-		$cache->set('pageTsConfig', $pageTsConfig, array(), 806400);
-		return NULL;
+		return $pageTsConfig;
 	}
 
 	/**
@@ -207,56 +175,15 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	}
 
 	/**
-	 * Gets a collection of path configurations for content elements
-	 * based on each root TypoScript template in the provided array
-	 * of templates. Returns an array of paths indexed by the root
-	 * page UID.
-	 *
-	 * @param array $templates
-	 * @return array
-	 */
-	protected function getPathConfigurationsFromRootTypoScriptTemplates($templates) {
-		$allTemplatePaths = array();
-		$registeredExtensionKeys = Core::getRegisteredProviderExtensionKeys('Content');
-		foreach ($templates as $templateRecord) {
-			$pageUid = $templateRecord['pid'];
-			/** @var \TYPO3\CMS\Core\TypoScript\ExtendedTemplateService $template */
-			$template = GeneralUtility::makeInstance('TYPO3\\CMS\\Core\\TypoScript\\ExtendedTemplateService');
-			$template->tt_track = 0;
-			$template->init();
-			/** @var \TYPO3\CMS\Frontend\Page\PageRepository $sys_page */
-			$sys_page = GeneralUtility::makeInstance('TYPO3\\CMS\\Frontend\\Page\\PageRepository');
-			$rootLine = $sys_page->getRootLine($pageUid);
-			$template->runThroughTemplates($rootLine);
-			$template->generateConfig();
-			$oldTemplatePathLocation = (array) $template->setup['plugin.']['tx_fed.']['fce.'];
-			$newTemplatePathLocation = (array) $template->setup['plugin.']['tx_fluidcontent.']['collections.'];
-			$registeredPathCollections = array();
-			foreach ($registeredExtensionKeys as $registeredExtensionKey) {
-				$nativeViewLocation = $this->getContentConfiguration($registeredExtensionKey);
-				if (FALSE === isset($nativeViewLocation['extensionKey'])) {
-					$nativeViewLocation['extensionKey'] = ExtensionNamingUtility::getExtensionKey($registeredExtensionKey);
-				}
-				$registeredPathCollections[$registeredExtensionKey] = $nativeViewLocation;
-			}
-			$merged = GeneralUtility::array_merge_recursive_overrule($oldTemplatePathLocation, $newTemplatePathLocation);
-			$merged = GeneralUtility::removeDotsFromTS($merged);
-			$merged = GeneralUtility::array_merge($merged, $registeredPathCollections);
-			$allTemplatePaths[$pageUid] = $merged;
-		}
-		return $allTemplatePaths;
-	}
-
-	/**
 	 * @return array
 	 */
 	protected function getAllRootTypoScriptTemplates() {
 		$condition = 'deleted = 0 AND hidden = 0 AND starttime <= :starttime AND (endtime = 0 OR endtime > :endtime)';
-		$paramters = array(
+		$parameters = array(
 			':starttime' => $GLOBALS['SIM_ACCESS_TIME'],
 			':endtime' => $GLOBALS['SIM_ACCESS_TIME']
 		);
-		$rootTypoScriptTemplates = $this->recordService->preparedGet('sys_template', 'pid', $condition, $paramters);
+		$rootTypoScriptTemplates = $this->recordService->preparedGet('sys_template', 'pid', $condition, $parameters);
 		return $rootTypoScriptTemplates;
 	}
 
@@ -275,13 +202,12 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			$formSet = $this->sortObjectsByProperty($formSet, 'options.Fluidcontent.sorting', 'ASC');
 			foreach ($formSet as $id => $form) {
 				/** @var Form $form */
-				$group = $form->getGroup();
-				if (FALSE === empty($group)) {
-					$tabId = $this->sanitizeString($group);
-					$wizardTabs[$tabId]['title'] = $group;
-				} else {
-					$tabId = 'Content';
+				$group = $form->getOption(Form::OPTION_GROUP);
+				if (TRUE === empty($group)) {
+					$group = 'Content';
 				}
+				$tabId = $this->sanitizeString($group);
+				$wizardTabs[$tabId]['title'] = $group;
 				$contentElementId = $form->getOption('contentElementId');
 				$elementTsConfig = $this->buildWizardTabItem($tabId, $id, $form, $contentElementId);
 				$wizardTabs[$tabId]['elements'][$id] = $elementTsConfig;
@@ -297,38 +223,35 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	public function getContentElementFormInstances() {
 		$elements = array();
 		$allTemplatePaths = $this->getContentConfiguration();
+		$controllerName = 'Content';
 		foreach ($allTemplatePaths as $registeredExtensionKey => $templatePathSet) {
-			$registeredExtensionKey = trim($registeredExtensionKey, '.');
+			$files = array();
 			$extensionKey = TRUE === isset($templatePathSet['extensionKey']) ? $templatePathSet['extensionKey'] : $registeredExtensionKey;
 			$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionKey);
-			$paths = array(
-				'templateRootPath' => TRUE === isset($templatePathSet['templateRootPath']) ? $templatePathSet['templateRootPath'] : 'EXT:' . $extensionKey . '/Resources/Private/Templates/',
-				'layoutRootPath' => TRUE === isset($templatePathSet['layoutRootPath']) ? $templatePathSet['layoutRootPath'] : 'EXT:' . $extensionKey . '/Resources/Private/Layouts/',
-				'partialRootPath' => TRUE === isset($templatePathSet['partialRootPath']) ? $templatePathSet['partialRootPath'] : 'EXT:' . $extensionKey . '/Resources/Private/Partials/',
-			);
-			$paths = PathUtility::translatePath($paths);
-			$templateRootPath = rtrim($paths['templateRootPath'], '/') . '/';
-			if (TRUE === file_exists($templateRootPath . 'Content/')) {
-				$templateRootPath = $templateRootPath . 'Content/';
-			}
-			$templateRootPathLength = strlen($templateRootPath);
-			$files = array();
-			$files = GeneralUtility::getAllFilesAndFoldersInPath($files, $templateRootPath, 'html');
-			if (0 < count($files)) {
-				foreach ($files as $templateFilename) {
-					$fileRelPath = substr($templateFilename, $templateRootPathLength);
-					$form = $this->getFormFromTemplateFile($templateFilename, 'Configuration', 'form', $paths, $extensionKey);
-					if (TRUE === empty($form)) {
-						$this->sendDisabledContentWarning($templateFilename);
-						continue;
+			$templatePaths = new TemplatePaths($templatePathSet);
+			$viewContext = new ViewContext(NULL, $extensionKey);
+			$viewContext->setTemplatePaths($templatePaths);
+			$viewContext->setSectionName('Configuration');
+			foreach ($templatePaths->getTemplateRootPaths() as $templateRootPath) {
+				$files = GeneralUtility::getAllFilesAndFoldersInPath($files, $templateRootPath . '/' . $controllerName, 'html');
+				if (0 < count($files)) {
+					foreach ($files as $templateFilename) {
+						$actionName = pathinfo($templateFilename, PATHINFO_FILENAME);
+						$fileRelPath = $actionName . '.html';
+						$viewContext->setTemplatePathAndFilename($templateFilename);
+						$form = $this->getFormFromTemplateFile($viewContext);
+						if (TRUE === empty($form)) {
+							$this->sendDisabledContentWarning($templateFilename);
+							continue;
+						}
+						if (FALSE === $form->getEnabled()) {
+							$this->sendDisabledContentWarning($templateFilename);
+							continue;
+						}
+						$id = preg_replace('/[\.\/]/', '_', $registeredExtensionKey . '/' . $actionName . '.html');
+						$form->setOption('contentElementId', $registeredExtensionKey . ':' . $fileRelPath);
+						$elements[$registeredExtensionKey][$id] = $form;
 					}
-					if (FALSE === $form->getEnabled()) {
-						$this->sendDisabledContentWarning($templateFilename);
-						continue;
-					}
-					$id = preg_replace('/[\.\/]/', '_', $registeredExtensionKey . '_' . $fileRelPath);
-					$form->setOption('contentElementId', $registeredExtensionKey . ':' . $fileRelPath);
-					$elements[$registeredExtensionKey][$id] = $form;
 				}
 			}
 		}
@@ -374,16 +297,13 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 *
 	 * @param string $tabId
 	 * @param string $id
-	 * @param \FluidTYPO3\Flux\Form $form
+	 * @param Form $form
 	 * @param string $templateFileIdentity
 	 * @return string
 	 */
 	protected function buildWizardTabItem($tabId, $id, $form, $templateFileIdentity) {
-		$icon = $form->getOption(Form::OPTION_ICON);
+		$icon = MiscellaneousUtility::getIconForTemplate($form);
 		$description = $form->getDescription();
-		if (TRUE === empty($description)) {
-			$description = '-';
-		}
 		$iconFileRelativePath = ($icon ? $icon : $this->defaultIcon);
 		return sprintf('
 			mod.wizards.newContentElement.wizardItems.%s.elements.%s {
