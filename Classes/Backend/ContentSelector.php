@@ -92,8 +92,8 @@ class ContentSelector {
 	protected function renderOptionGroup(array $configuration, $groupLabel, $value) {
 		foreach ($configuration as $form) {
 			/** @var Form $form */
-			$selected = ($optionValue === $value ? ' selected="selected"' : '');
 			$optionValue = $form->getOption('contentElementId');
+			$selected = ($optionValue === $value ? ' selected="selected"' : '');
 			$label = $form->getLabel();
 			$icon = MiscellaneousUtility::getIconForTemplate($form);
 			$label = (0 === strpos($label, 'LLL:') ? $GLOBALS['LANG']->sL($label) : $label);

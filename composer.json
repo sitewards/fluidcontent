@@ -17,7 +17,7 @@
     "keywords": ["TYPO3 CMS", "templating", "bootstrap", "flux", "fluidcontent", "fedext", "fluid"],
     "homepage": "https://fluidtypo3.org",
     "license": "GPL-2.0+",
-	"version": "4.2.0",
+	"version": "4.2.1",
     "support": {
         "irc": "irc://irc.freenode.org/fedext",
         "issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
@@ -27,8 +27,26 @@
     },
     "repositories": [
         {
-            "type": "vcs",
-            "url": "https://github.com/TYPO3/TYPO3.CMS"
+            "type": "package",
+            "package": {
+                "name": "typo3/cms",
+                "version": "6.2.10",
+                "dist": {
+                    "url": "https://github.com/TYPO3/TYPO3.CMS/archive/6.2.10.zip",
+                    "type": "zip"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "typo3/cms",
+                "version": "7.1.0",
+                "dist": {
+                    "url": "https://github.com/TYPO3/TYPO3.CMS/archive/7.1.0.zip",
+                    "type": "zip"
+                }
+            }
         }
     ]
 }
