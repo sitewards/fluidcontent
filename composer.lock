@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "385b1eacc958eb5cfc3471a7e6a5f92f",
+    "hash": "5bc91d11c5e6e3d03f0cadfd6c68f357",
     "packages": [
         {
             "name": "fluidtypo3/flux",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FluidTYPO3/flux.git",
-                "reference": "7c0ea3cccb0164de732f033cc4837c31c53e922e"
+                "reference": "78558a4006439282b92de29f1824d5385d5ebf67"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FluidTYPO3/flux/zipball/7c0ea3cccb0164de732f033cc4837c31c53e922e",
-                "reference": "7c0ea3cccb0164de732f033cc4837c31c53e922e",
+                "url": "https://api.github.com/repos/FluidTYPO3/flux/zipball/78558a4006439282b92de29f1824d5385d5ebf67",
+                "reference": "78558a4006439282b92de29f1824d5385d5ebf67",
                 "shasum": ""
             },
             "require-dev": {
@@ -41,7 +41,7 @@
             ],
             "description": "The flux package from FluidTYPO3",
             "homepage": "http://fluidtypo3.org",
-            "time": "2015-03-18 15:12:53"
+            "time": "2015-03-21 13:06:03"
         }
     ],
     "packages-dev": [
