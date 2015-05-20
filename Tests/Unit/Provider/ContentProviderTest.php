@@ -62,8 +62,10 @@ class ContentProviderTest extends UnitTestCase {
 	 * @return array
 	 */
 	public function getTemplatePathAndFilenameTestValues() {
+		$path = ExtensionManagementUtility::extPath('fluidcontent');
+		$file = $path . 'Resources/Private/Templates/Content/Index.html';
 		return array(
-			array(array('uid' => 0), NULL),
+			array(array('uid' => 0), $file),
 			array(array('tx_fed_fcefile' => 'test:Test.html'), NULL),
 		);
 	}
@@ -87,12 +89,12 @@ class ContentProviderTest extends UnitTestCase {
 		$path = ExtensionManagementUtility::extPath('fluidcontent');
 		return array(
 			array(
-				'EXT:fluidcontent/Resources/Private/Templates/Content/Render.html',
-				$path . 'Resources/Private/Templates/Content/Render.html',
+				'EXT:fluidcontent/Resources/Private/Templates/Content/Index.html',
+				$path . 'Resources/Private/Templates/Content/Index.html',
 			),
 			array(
-				$path . 'Resources/Private/Templates/Content/Render.html',
-				$path . 'Resources/Private/Templates/Content/Render.html',
+				$path . 'Resources/Private/Templates/Content/Index.html',
+				$path . 'Resources/Private/Templates/Content/Index.html',
 			),
 			array(
 				'EXT:fluidcontent/Resources/Private/Templates/Content/Error.html',
@@ -125,7 +127,7 @@ class ContentProviderTest extends UnitTestCase {
 	 */
 	public function getControllerExtensionKeyFromRecordTestValues() {
 		return array(
-			array(array('uid' => 0), NULL),
+			array(array('uid' => 0), 'Fluidcontent'),
 			array(array('tx_fed_fcefile' => 'test:test'), 'test'),
 		);
 	}
@@ -146,7 +148,7 @@ class ContentProviderTest extends UnitTestCase {
 	 */
 	public function getControllerActionFromRecordTestValues() {
 		return array(
-			array(array('uid' => 0), 'default'),
+			array(array('uid' => 0), 'index'),
 			array(array('tx_fed_fcefile' => 'test:test'), 'test'),
 		);
 	}

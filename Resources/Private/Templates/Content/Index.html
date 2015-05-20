@@ -1,0 +1,17 @@
+<f:layout name="Content" />
+<f:section name="Configuration">
+	<flux:form id="default">
+		<flux:form.option name="enabled" value="0" />
+		<flux:field.custom name="test">
+			BLAH!
+		</flux:field.custom>
+	</flux:form>
+</f:section>
+
+<f:section name="Preview">
+	<f:render section="Main" />
+</f:section>
+
+<f:section name="Main">
+	<f:translate key="tt_content.tx_fed_fcefile.emptyMessage" />
+</f:section>
