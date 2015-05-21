@@ -1,5 +1,11 @@
 # Fluidcontent Change log
 
+4.2.2 - 2015-05-20
+------------------
+
+- Default template added, which is used in case Fluid Content type is not specified
+  - [Technical deatils](https://github.com/FluidTYPO3/fluidcontent/commit/763fbb612e95038391d178e33295c2829623f738)
+
 4.2.1 - 2015-03-19
 ------------------
 
