@@ -120,7 +120,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 				$pageUid = (integer) $template['pid'];
 				$pageTsConfig .= $this->renderPageTypoScriptForPageUid($pageUid);
 			}
-			$cache->set('pageTsConfig', $pageTsConfig, array(), 806400);
+			$cache->set('pageTsConfig', $pageTsConfig, array(), 86400);
 		}
 	}
 
