@@ -84,7 +84,7 @@ class ConfigurationServiceTest extends UnitTestCase {
 				)
 			)
 		);
-		$service = $this->getMock('FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService', array(), array(), '', FALSE);
+		$service = new ConfigurationService();
 		$result = $this->callInaccessibleMethod($service, 'buildAllWizardTabsPageTsConfig', $tabs);
 		foreach ($tabs as $tabId => $tab) {
 			$this->assertContains($tabId, $result);
