@@ -84,7 +84,16 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @return void
 	 */
 	public function initializeObject() {
-		$this->writeCachedConfigurationIfMissing();
+		if (TRUE === $this->isBackendMode()) {
+			$this->writeCachedConfigurationIfMissing();
+		}
+	}
+
+	/**
+	 * @return boolean
+	 */
+	protected function isBackendMode() {
+		return ('BE' === TYPO3_MODE);
 	}
 
 	/**
