@@ -5,7 +5,6 @@ if (!defined('TYPO3_MODE')) {
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', array(
         'tx_fed_fcefile' => array (
-		'displayCond' => 'FIELD:CType:=:fluidcontent_content',
                 'exclude' => 1,
                 'label' => 'LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile',
                 'config' => array (
@@ -17,9 +16,19 @@ if (!defined('TYPO3_MODE')) {
         ),
 ));
 
-$GLOBALS['TCA']['tt_content']['types']['fluidcontent_content']['showitem'] = $GLOBALS['TCA']['tt_content']['types']['text']['showitem'];
-$GLOBALS['TCA']['tt_content']['types']['fluidcontent_content']['showitem'] = str_replace('bodytext;LLL:EXT:cms/locallang_ttc.xml:bodytext_formlabel;;richtext:rte_transform[flag=rte_enabled|mode=ts_css],', '', $GLOBALS['TCA']['tt_content']['types']['fluidcontent_content']['showitem']);
-$GLOBALS['TCA']['tt_content']['types']['fluidcontent_content']['showitem'] = str_replace('rte_enabled;LLL:EXT:cms/locallang_ttc.xml:rte_enabled_formlabel,', '', $GLOBALS['TCA']['tt_content']['types']['fluidcontent_content']['showitem']);
+$GLOBALS['TCA']['tt_content']['types']['fluidcontent_content']['showitem'] = '
+                --palette--;LLL:EXT:cms/locallang_ttc.xlf:palette.general;general,
+                --palette--;LLL:EXT:cms/locallang_ttc.xlf:palette.headers;headers,
+        --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.appearance
+                pi_flexform,
+        --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.appearance,
+                --palette--;LLL:EXT:cms/locallang_ttc.xlf:palette.frames;frames,
+        --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.access,
+                --palette--;LLL:EXT:cms/locallang_ttc.xlf:palette.visibility;visibility,
+                --palette--;LLL:EXT:cms/locallang_ttc.xlf:palette.access;access,
+        --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.extended
+';
+
 
 $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes']['fluidcontent_content'] = 'apps-pagetree-root';
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette('tt_content', 'general', 'tx_fed_fcefile', 'after:CType');
