@@ -84,7 +84,16 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @return void
 	 */
 	public function initializeObject() {
-		$this->writeCachedConfigurationIfMissing();
+		if (TRUE === $this->isBackendMode()) {
+			$this->writeCachedConfigurationIfMissing();
+		}
+	}
+
+	/**
+	 * @return boolean
+	 */
+	protected function isBackendMode() {
+		return ('BE' === TYPO3_MODE);
 	}
 
 	/**
@@ -120,7 +129,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 				$pageUid = (integer) $template['pid'];
 				$pageTsConfig .= $this->renderPageTypoScriptForPageUid($pageUid);
 			}
-			$cache->set('pageTsConfig', $pageTsConfig, array(), 806400);
+			$cache->set('pageTsConfig', $pageTsConfig, array(), 86400);
 		}
 	}
 
