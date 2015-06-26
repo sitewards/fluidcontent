@@ -1,5 +1,19 @@
 # Fluidcontent Change log
 
+upcoming
+------------------
+
+- TCA overrides are cached due to usage of latest TYPO3 TCA overrides suggestions
+	- [Source commit with more info](https://github.com/FluidTYPO3/fluidcontent/commit/b3b4da75f9a338d266e1c1f94b7b7c6719083fcb)
+	- [TCA overrides](http://docs.typo3.org/typo3cms/TCAReference/ExtendingTca/StoringChanges/Index.html#storing-changes-extension-overrides)
+
+- Removed TCA dependency on features from css_styled_content for cases, when fluidcontent_core used
+	- [Source commit with more info](https://github.com/FluidTYPO3/fluidcontent/commit/e2a274a6c6eee875f83c28b30ef9777f46544ca3)
+
+- Fixes for cache-related issues:
+	- [#239](https://github.com/FluidTYPO3/fluidcontent/pull/239) Lifetime of 'pageTsConfig' cache decreased form ~2 months to 1 day
+	- [#127](https://github.com/FluidTYPO3/fluidcontent/issues/127) 'pageTsConfig' cache is rebuilt only in BE context
+
 4.2.2 - 2015-05-20
 ------------------
 
