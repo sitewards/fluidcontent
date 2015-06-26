@@ -17,6 +17,7 @@ use FluidTYPO3\Flux\Utility\ResolveUtility;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Content object configuration provider
@@ -85,25 +86,22 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 */
 	public function getTemplatePathAndFilename(array $row) {
 		if (FALSE === empty($this->templatePathAndFilename)) {
-			$templatePathAndFilename = $this->templatePathAndFilename;
-			if ('/' !== $templatePathAndFilename{0}) {
-				$templatePathAndFilename = GeneralUtility::getFileAbsFileName($templatePathAndFilename);
+			$templateReference = $this->templatePathAndFilename;
+			if ('/' !== $templateReference{0}) {
+				$templateReference = GeneralUtility::getFileAbsFileName($templateReference);
 			}
-			if (TRUE === file_exists($templatePathAndFilename)) {
-				return $templatePathAndFilename;
+			if (TRUE === file_exists($templateReference)) {
+				return $templateReference;
 			}
 			return NULL;
 		}
-		$templatePathAndFilename = $row['tx_fed_fcefile'];
-		if (FALSE === strpos($templatePathAndFilename, ':')) {
-			return NULL;
-		}
-		list (, $filename) = explode(':', $templatePathAndFilename);
+		$templateReference = $this->getControllerActionReferenceFromRecord($row);
+		list (, $filename) = explode(':', $templateReference);
 		list ($controllerAction, $format) = explode('.', $filename);
+		$controllerAction = $this->getControllerActionFromRecord($row);
 		$paths = $this->getTemplatePaths($row);
 		$templatePaths = new TemplatePaths($paths);
-		$templatePathAndFilename = $templatePaths->resolveTemplateFileForControllerAndActionAndFormat('Content', $controllerAction, $format);
-		return $templatePathAndFilename;
+		return $templatePaths->resolveTemplateFileForControllerAndActionAndFormat('Content', $controllerAction, $format);
 	}
 
 	/**
@@ -152,15 +150,10 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 */
 	public function getControllerActionFromRecord(array $row) {
 		$fileReference = $this->getControllerActionReferenceFromRecord($row);
-		if (TRUE === empty($fileReference)) {
-			$table = $this->getTableName($row);
-			$this->configurationService->message('No content template found in "' . $table . ':' . $row['uid'] . '"', 1404736585);
-			return 'default';
-		}
 		$identifier = explode(':', $fileReference);
 		$actionName = array_pop($identifier);
 		$actionName = basename($actionName, '.html');
-		$actionName{0} = strtolower($actionName{0});
+		$actionName = lcfirst($actionName);
 		return $actionName;
 	}
 
@@ -170,7 +163,7 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 */
 	public function getControllerActionReferenceFromRecord(array $row) {
 		$fileReference = $row['tx_fed_fcefile'];
-		return $fileReference;
+		return TRUE === empty($fileReference) ? 'Fluidcontent:index.html' : $fileReference;
 	}
 
 	/**
