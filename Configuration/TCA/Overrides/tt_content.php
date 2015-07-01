@@ -19,7 +19,6 @@ if (!defined('TYPO3_MODE')) {
 $GLOBALS['TCA']['tt_content']['types']['fluidcontent_content']['showitem'] = '
                 --palette--;LLL:EXT:cms/locallang_ttc.xlf:palette.general;general,
                 --palette--;LLL:EXT:cms/locallang_ttc.xlf:palette.headers;headers,
-        --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.appearance
                 pi_flexform,
         --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.appearance,
                 --palette--;LLL:EXT:cms/locallang_ttc.xlf:palette.frames;frames,
