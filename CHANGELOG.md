@@ -1,6 +1,12 @@
 # Fluidcontent Change log
 
-upcoming
+4.2.4 - 2015-07-01
+------------------
+
+- Bugfix release:
+	- [#243](https://github.com/FluidTYPO3/fluidcontent/issues/243) Flexform not showing in BE
+
+4.2.3 - 2015-06-26
 ------------------
 
 - TCA overrides are cached due to usage of latest TYPO3 TCA overrides suggestions
