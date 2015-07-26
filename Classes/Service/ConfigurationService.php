@@ -81,15 +81,6 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	}
 
 	/**
-	 * @return void
-	 */
-	public function initializeObject() {
-		if (TRUE === $this->isBackendMode()) {
-			$this->writeCachedConfigurationIfMissing();
-		}
-	}
-
-	/**
 	 * @return boolean
 	 */
 	protected function isBackendMode() {
@@ -116,6 +107,19 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getPageTsConfig() {
+		$pageTsConfig = '';
+		$templates = $this->getAllRootTypoScriptTemplates();
+		foreach ($templates as $template) {
+			$pageUid = (integer) $template['pid'];
+			$pageTsConfig .= $this->renderPageTypoScriptForPageUid($pageUid);
+		}
+		return $pageTsConfig;
+	}
+
+	/**
 	 * @return void
 	 */
 	public function writeCachedConfigurationIfMissing() {
@@ -123,13 +127,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		$cache = $this->manager->getCache('fluidcontent');
 		$hasCache = $cache->has('pageTsConfig');
 		if (FALSE === $hasCache) {
-			$pageTsConfig = '';
-			$templates = $this->getAllRootTypoScriptTemplates();
-			foreach ($templates as $template) {
-				$pageUid = (integer) $template['pid'];
-				$pageTsConfig .= $this->renderPageTypoScriptForPageUid($pageUid);
-			}
-			$cache->set('pageTsConfig', $pageTsConfig, array(), 86400);
+			$cache->set('pageTsConfig', $this->getPageTsConfig(), array(), 86400);
 		}
 	}
 
