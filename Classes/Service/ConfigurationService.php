@@ -138,6 +138,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	protected function renderPageTypoScriptForPageUid($pageUid) {
 		$this->backupPageUidForConfigurationManager();
 		$this->overrideCurrentPageUidForConfigurationManager($pageUid);
+		$pageTsConfig = '';
 		try {
 			$collection = $this->getContentConfiguration();
 			$wizardTabs = $this->buildAllWizardTabGroups($collection);
