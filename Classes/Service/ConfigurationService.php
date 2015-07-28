@@ -21,7 +21,9 @@ use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\StringFrontend;
+use TYPO3\CMS\Core\Imaging\GraphicalFunctions;
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Core\Utility\CommandUtility;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -32,6 +34,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * to Fluid Content Elements.
  */
 class ConfigurationService extends FluxService implements SingletonInterface {
+
+	/**
+	 * Default Width for icon
+	 */
+	const ICON_WIDTH = 24;
+
+	/**
+	 * Default Height for icon
+	 */
+	const ICON_HEIGHT = 24;
 
 	/**
 	 * @var CacheManager
@@ -312,7 +324,19 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	protected function buildWizardTabItem($tabId, $id, $form, $templateFileIdentity) {
 		$icon = MiscellaneousUtility::getIconForTemplate($form);
 		$description = $form->getDescription();
-		$iconFileRelativePath = ($icon ? $icon : $this->defaultIcon);
+		$icon = ($icon ? $icon : $this->defaultIcon);
+		if (0 === strpos($icon, '../')) {
+			$icon = substr($icon, 2);
+		}
+
+		if ('/' === $icon[0]) {
+			$icon = realpath(PATH_site . $icon);
+		}
+
+		if (TRUE === file_exists($icon)) {
+			$icon = '../..' . MiscellaneousUtility::createIcon($icon, self::ICON_WIDTH, self::ICON_HEIGHT);
+		}
+
 		return sprintf('
 			mod.wizards.newContentElement.wizardItems.%s.elements.%s {
 				icon = %s
@@ -326,7 +350,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			',
 			$tabId,
 			$id,
-			$iconFileRelativePath,
+			$icon,
 			$form->getLabel(),
 			$description,
 			$templateFileIdentity
