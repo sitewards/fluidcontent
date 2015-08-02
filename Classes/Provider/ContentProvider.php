@@ -13,11 +13,9 @@ use FluidTYPO3\Flux\Provider\ContentProvider as FluxContentProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
-use FluidTYPO3\Flux\Utility\ResolveUtility;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Content object configuration provider
@@ -126,9 +124,9 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 		$action = $row['tx_fed_fcefile'];
 		if (FALSE !== strpos($action, ':')) {
 			$extensionName = array_shift(explode(':', $action));
-		}
-		if (FALSE === empty($extensionName)) {
-			$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
+			if (FALSE === empty($extensionName)) {
+				$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
+			}
 		}
 		return $extensionKey;
 	}

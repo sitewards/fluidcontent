@@ -11,11 +11,9 @@ namespace FluidTYPO3\Fluidcontent\Hooks;
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\WizardItemsHookSubscriber as FluxWizardItemsHookSubscriber;
-use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Backend\Wizard\NewContentElementWizardHookInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Object\ObjectManagerInterface;
 
 /**
  * WizardItems Hook Subscriber
@@ -32,6 +30,7 @@ class WizardItemsHookSubscriber extends FluxWizardItemsHookSubscriber implements
 	 */
 	public function __construct() {
 		parent::__construct();
+		/** @var ConfigurationService $configurationService */
 		$configurationService = $this->objectManager->get('FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService');
 		$this->injectConfigurationService($configurationService);
 	}

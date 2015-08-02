@@ -9,12 +9,12 @@ namespace FluidTYPO3\Fluidcontent\Tests\Unit\Service;
  */
 
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
+use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use FluidTYPO3\Flux\Core;
 use FluidTYPO3\Flux\Form;
-use FluidTYPO3\Flux\Service\ContentService;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
-use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Object\ObjectManager;
 
 /**
  * Class ConfigurationServiceTest
@@ -23,6 +23,7 @@ class ConfigurationServiceTest extends UnitTestCase {
 
 	public function testGetContentConfiguration() {
 		Core::registerProviderExtensionKey('FluidTYPO3.Fluidcontent', 'Content');
+		/** @var ConfigurationService $service */
 		$service = $this->getMock('FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService', array('dummy'), array(), '', FALSE);
 		$service->injectConfigurationManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
 			->get('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface'));
@@ -51,6 +52,7 @@ class ConfigurationServiceTest extends UnitTestCase {
 		$preparedStatementMock->expects($this->any())->method('free');
 		$preparedStatementMock->expects($this->any())->method('fetch')->willReturn(FALSE);;
 		$GLOBALS['TYPO3_DB']->expects($this->any())->method('prepare_SELECTquery')->willReturn($preparedStatementMock);
+		/** @var ConfigurationService|\PHPUnit_Framework_MockObject_MockObject $service */
 		$service = $this->getMock(
 			'FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService',
 			array('getAllRootTypoScriptTemplates', 'renderPageTypoScriptForPageUid'),
@@ -130,8 +132,11 @@ class ConfigurationServiceTest extends UnitTestCase {
 	 */
 	public function testGetContentElementFormInstances() {
 		$class = substr(str_replace('Tests\\Unit\\', '', get_class($this)), 0, -4);
+		/** @var ConfigurationService|\PHPUnit_Framework_MockObject_MockObject $mock */
 		$mock = $this->getMock($class, array('getContentConfiguration', 'message'));
-		$mock->injectObjectManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
+		/** @var ObjectManager $objectManager */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		$mock->injectObjectManager($objectManager);
 		$mock->expects($this->once())->method('getContentConfiguration')->willReturn(array(
 			'fluidcontent' => array(
 				'templateRootPath' => 'EXT:fluidcontent/Tests/Fixtures/Templates/'
@@ -147,8 +152,11 @@ class ConfigurationServiceTest extends UnitTestCase {
 	 */
 	public function testBuildAllWizardTabGroups() {
 		$class = substr(str_replace('Tests\\Unit\\', '', get_class($this)), 0, -4);
+		/** @var ConfigurationService|\PHPUnit_Framework_MockObject_MockObject $mock */
 		$mock = $this->getMock($class, array('getContentConfiguration', 'message'));
-		$mock->injectObjectManager(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager'));
+		/** @var ObjectManager $objectManager */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		$mock->injectObjectManager($objectManager);
 		$paths = array(
 			'fluidcontent' => array(
 				'templateRootPath' => 'EXT:fluidcontent/Tests/Fixtures/Templates/'
@@ -164,7 +172,7 @@ class ConfigurationServiceTest extends UnitTestCase {
 
 	/**
 	 * @dataProvider getTestRenderPageTypoScriptTestValues
-	 * @return void
+	 * @param $pageUid
 	 */
 	public function testRenderPageTypoScriptForPageUidCreatesExpectedTypoScript($pageUid) {
 		$class = substr(str_replace('Tests\\Unit\\', '', get_class($this)), 0, -4);
@@ -215,6 +223,7 @@ class ConfigurationServiceTest extends UnitTestCase {
 	 */
 	public function testConfigurationManagerOverrides() {
 		$instance = new ConfigurationService();
+		/** @var ConfigurationManager|\PHPUnit_Framework_MockObject_MockObject $mock */
 		$mock = $this->getMock(
 			'FluidTYPO3\\Flux\\Configuration\\ConfigurationManager',
 			array('setCurrentPageUid', 'getCurrentPageId')

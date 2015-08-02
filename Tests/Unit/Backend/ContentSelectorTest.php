@@ -77,6 +77,7 @@ class ContentSelectorTest extends UnitTestCase {
 		);
 		$parent = 'unused';
 		$configurationService->expects($this->once())->method('getContentElementFormInstances')->willReturn($forms);
+		/** @var ContentSelector|\PHPUnit_Framework_MockObject_MockObject $instance */
 		$instance = $this->getMock('FluidTYPO3\\Fluidcontent\\Backend\\ContentSelector', array('getConfigurationService'));
 		$instance->expects($this->once())->method('getConfigurationService')->willReturn($configurationService);
 		$rendered = $instance->renderField($parameters, $parent);
