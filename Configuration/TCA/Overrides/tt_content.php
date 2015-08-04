@@ -3,17 +3,21 @@ if (!defined('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
+if (TRUE === version_compare(TYPO3_version, '7.1', '<')) {
+	$contentSelector = 'FluidTYPO3\Fluidcontent\Backend\LegacyContentSelector->renderField';
+} else {
+	$contentSelector = 'FluidTYPO3\Fluidcontent\Backend\ContentSelector->renderField';
+}
+
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', array(
-        'tx_fed_fcefile' => array (
-                'exclude' => 1,
-                'label' => 'LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile',
-                'config' => array (
-                        'type' => 'user',
-                        'userFunc' => TRUE === version_compare(TYPO3_version, '7.1', '<')
-                                ? 'FluidTYPO3\Fluidcontent\Backend\LegacyContentSelector->renderField'
-                                : 'FluidTYPO3\Fluidcontent\Backend\ContentSelector->renderField',
-                )
-        ),
+	'tx_fed_fcefile' => array(
+		'exclude' => 1,
+		'label' => 'LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile',
+		'config' => array(
+			'type' => 'user',
+			'userFunc' => $contentSelector,
+		)
+	),
 ));
 
 $GLOBALS['TCA']['tt_content']['types']['fluidcontent_content']['showitem'] = '
@@ -27,7 +31,6 @@ $GLOBALS['TCA']['tt_content']['types']['fluidcontent_content']['showitem'] = '
                 --palette--;LLL:EXT:cms/locallang_ttc.xlf:palette.access;access,
         --div--;LLL:EXT:cms/locallang_ttc.xlf:tabs.extended
 ';
-
 
 $GLOBALS['TCA']['tt_content']['ctrl']['typeicon_classes']['fluidcontent_content'] = 'apps-pagetree-root';
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addFieldsToPalette('tt_content', 'general', 'tx_fed_fcefile', 'after:CType');

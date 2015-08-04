@@ -8,8 +8,11 @@ namespace FluidTYPO3\Fluidcontent\Tests\Unit\Controller;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Fluidcontent\Controller\ContentController;
+use FluidTYPO3\Flux\Configuration\ConfigurationManager;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\View\StandaloneView;
 
 /**
  * Class ContentControllerTest
@@ -37,6 +40,7 @@ class ContentControllerTest extends UnitTestCase {
 	}
 
 	public function testInitializeView() {
+		/** @var ContentController|\PHPUnit_Framework_MockObject_MockObject $instance */
 		$instance = $this->getMock(
 			'FluidTYPO3\\Fluidcontent\\Controller\\ContentController',
 			array(
@@ -44,6 +48,7 @@ class ContentControllerTest extends UnitTestCase {
 				'initializeViewObject', 'initializeViewVariables'
 			)
 		);
+		/** @var ConfigurationManager|\PHPUnit_Framework_MockObject_MockObject $configurationManager */
 		$configurationManager = $this->getMock(
 			'TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManager',
 			array('getContentObject', 'getConfiguration')
@@ -53,6 +58,7 @@ class ContentControllerTest extends UnitTestCase {
 		$configurationManager->expects($this->once())->method('getConfiguration')->willReturn(array('foo' => 'bar'));
 		$instance->expects($this->once())->method('getRecord')->willReturn(array('uid' => 0));
 		$GLOBALS['TSFE'] = (object) array('page' => 'page', 'fe_user' => (object) array('user' => 'user'));
+		/** @var StandaloneView|\PHPUnit_Framework_MockObject_MockObject $view */
 		$view = $this->getMock('TYPO3\\CMS\\Fluid\\View\\StandaloneView', array('assign'));
 		$instance->injectConfigurationManager($configurationManager);
 		$view->expects($this->at(0))->method('assign')->with('page', 'page');

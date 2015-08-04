@@ -8,10 +8,13 @@ namespace FluidTYPO3\Fluidcontent\Tests\Unit\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Fluidcontent\Hooks\WizardItemsHookSubscriber;
+use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
 use FluidTYPO3\Flux\Form\Container\Column;
 use FluidTYPO3\Flux\Form\Container\Grid;
 use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Provider\Provider;
+use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -51,6 +54,7 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 	 */
 	public function processesWizardItems($items, $whitelist, $blacklist, $expectedList) {
 		$objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		/** @var WizardItemsHookSubscriber $instance */
 		$instance = $objectManager->get('FluidTYPO3\\Fluidcontent\\Hooks\\WizardItemsHookSubscriber');
 		$emulatedPageAndContentRecord = array('uid' => 1, 'tx_flux_column' => 'name');
 		$controller = new NewContentElementController();
@@ -67,18 +71,21 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 		));
 		$row->add($column);
 		$grid->add($row);
+		/** @var Provider $provider1 */
 		$provider1 = $objectManager->get('FluidTYPO3\\Flux\\Provider\\Provider');
 		$provider1->setTemplatePaths(array());
 		$provider1->setTemplateVariables(array());
 		$provider1->setGrid($grid);
 		$provider2 = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getGrid'));
 		$provider2->expects($this->exactly(1))->method('getGrid')->will($this->returnValue(NULL));
+		/** @var ConfigurationService|\PHPUnit_Framework_MockObject_MockObject $configurationService */
 		$configurationService = $this->getMock(
 			'FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService',
 			array('resolveConfigurationProviders', 'writeCachedConfigurationIfMissing')
 		);
 		$configurationService->expects($this->exactly(1))->method('resolveConfigurationProviders')
 			->will($this->returnValue(array($provider1, $provider2)));
+		/** @var WorkspacesAwareRecordService|\PHPUnit_Framework_MockObject_MockObject $recordService */
 		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('getSingle'));
 		$recordService->expects($this->exactly(2))->method('getSingle')->will($this->returnValue($emulatedPageAndContentRecord));
 		$instance->injectConfigurationService($configurationService);
@@ -135,12 +142,15 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 	}
 
 	public function testManipulateWizardItemsCallsExpectedMethodSequenceWithoutProviders() {
+		/** @var WizardItemsHookSubscriber $instance */
 		$instance = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
 			->get('FluidTYPO3\\Fluidcontent\\Hooks\\WizardItemsHookSubscriber');
+		/** @var ConfigurationService|\PHPUnit_Framework_MockObject_MockObject $configurationService */
 		$configurationService = $this->getMock(
 			'FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService',
 			array('writeCachedConfigurationIfMissing', 'resolveConfigurationProviders')
 		);
+		/** @var WorkspacesAwareRecordService|\PHPUnit_Framework_MockObject_MockObject $recordService */
 		$recordService = $this->getMock(
 			'FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService',
 			array('getSingle')
@@ -156,12 +166,15 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 	}
 
 	public function testManipulateWizardItemsCallsExpectedMethodSequenceWithProvidersWithColPosWithoutRelativeElement() {
+		/** @var WizardItemsHookSubscriber $instance */
 		$instance = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
 			->get('FluidTYPO3\\Fluidcontent\\Hooks\\WizardItemsHookSubscriber');
+		/** @var ConfigurationService|\PHPUnit_Framework_MockObject_MockObject $configurationService */
 		$configurationService = $this->getMock(
 			'FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService',
 			array('writeCachedConfigurationIfMissing', 'resolveConfigurationProviders')
 		);
+		/** @var WorkspacesAwareRecordService|\PHPUnit_Framework_MockObject_MockObject $recordService */
 		$recordService = $this->getMock(
 			'FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService',
 			array('getSingle')
@@ -191,7 +204,7 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 	protected function getMockProvider(array $record, $withGrid = TRUE) {
 		$instance = $this->getMock('FluidTYPO3\\Flux\\Provider\\Provider', array('getViewVariables', 'getGrid'));
 		if (FALSE === $withGrid) {
-			$instance->expects($this->any())->method('getGrid')->willReturn($grid);
+			$instance->expects($this->any())->method('getGrid')->willReturn(NULL);
 		} else {
 			$grid = Grid::create();
 			$grid->createContainer('Row', 'row')->createContainer('Column', 'column')->setColumnPosition(1)

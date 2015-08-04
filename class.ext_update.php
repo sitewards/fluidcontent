@@ -5,6 +5,7 @@
  *
  * Performs update tasks for extension Fluidcontent
  */
+// @codingStandardsIgnoreStart
 class ext_update {
 
 	/**
