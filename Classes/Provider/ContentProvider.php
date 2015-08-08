@@ -85,7 +85,12 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 */
 	public function getForm(array $row) {
 		$form = parent::getForm($row);
-		if (NULL !== $form && FALSE === $form->hasOption(Form::OPTION_SORTING) && TRUE === $form->hasOption('Fluidcontent.sorting')) {
+		$moveSortingProperty = (
+			defined('FluidTYPO3\\Flux\\Form::OPTION_SORTING')
+			&& FALSE === $form->hasOption(Form::OPTION_SORTING)
+			&& TRUE === $form->hasOption('Fluidcontent.sorting')
+		);
+		if (NULL !== $form && TRUE === $moveSortingProperty) {
 			$form->setOption(Form::OPTION_SORTING, $form->getOption('Fluidcontent.sorting'));
 		}
 		return $form;
