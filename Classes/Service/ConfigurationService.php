@@ -90,11 +90,18 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->defaultIcon = '../' . ExtensionManagementUtility::siteRelPath('fluidcontent') . 'Resources/Public/Icons/Plugin.png';
+		$this->defaultIcon = '../' . ExtensionManagementUtility::siteRelPath('fluidcontent') . 'Resources/Public/Icons/Plugin.svg';
 
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['fluidcontent']);
 		$this->extConf['iconWidth'] = $this->extConf['iconWidth'] ? : self::ICON_WIDTH;
 		$this->extConf['iconHeight'] = $this->extConf['iconHeight'] ? : self::ICON_HEIGHT;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDefaultIcon() {
+		return $this->defaultIcon;
 	}
 
 	/**
