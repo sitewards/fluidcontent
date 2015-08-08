@@ -9,6 +9,7 @@ namespace FluidTYPO3\Fluidcontent\Provider;
  */
 
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ContentProvider as FluxContentProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
@@ -76,6 +77,18 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 */
 	public function injectConfigurationService(ConfigurationService $configurationService) {
 		$this->configurationService = $configurationService;
+	}
+
+	/**
+	 * @param array $row
+	 * @return \FluidTYPO3\Flux\Form|NULL
+	 */
+	public function getForm(array $row) {
+		$form = parent::getForm($row);
+		if (FALSE === $form->hasOption(Form::OPTION_SORTING) && TRUE === $form->hasOption('Fluidcontent.sorting')) {
+			$form->setOption(Form::OPTION_SORTING, $form->getOption('Fluidcontent.sorting'));
+		}
+		return $form;
 	}
 
 	/**
