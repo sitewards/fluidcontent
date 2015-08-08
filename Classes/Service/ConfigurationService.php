@@ -318,9 +318,13 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @return string
 	 */
 	protected function buildWizardTabItem($tabId, $id, $form, $templateFileIdentity) {
-		$icon = MiscellaneousUtility::getIconForTemplate($form);
+		if (TRUE === method_exists('FluidTYPO3\\Flux\\Utility\\MiscellaneousUtility', 'getIconForTemplate')) {
+			$icon = MiscellaneousUtility::getIconForTemplate($form);
+			$icon = ($icon ? $icon : $this->defaultIcon);
+		} else {
+			$icon = $this->defaultIcon;
+		}
 		$description = $form->getDescription();
-		$icon = ($icon ? $icon : $this->defaultIcon);
 		if (0 === strpos($icon, '../')) {
 			$icon = substr($icon, 2);
 		}
@@ -329,7 +333,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			$icon = realpath(PATH_site . $icon);
 		}
 
-		if (TRUE === file_exists($icon)) {
+		if (TRUE === file_exists($icon) && TRUE === method_exists('FluidTYPO3\\Flux\\Utility\\MiscellaneousUtility', 'createIcon')) {
 			$icon = '../..' . MiscellaneousUtility::createIcon($icon, self::ICON_WIDTH, self::ICON_HEIGHT);
 		}
 
