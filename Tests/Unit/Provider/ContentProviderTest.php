@@ -63,10 +63,11 @@ class ContentProviderTest extends UnitTestCase {
 	 */
 	public function getTemplatePathAndFilenameTestValues() {
 		$path = ExtensionManagementUtility::extPath('fluidcontent');
-		$file = $path . 'Resources/Private/Templates/Content/Index.html';
+		$file = $path . 'Resources/Private/Templates/Content/Error.html';
 		return array(
-			array(array('uid' => 0), $file),
-			array(array('tx_fed_fcefile' => 'test:Test.html'), NULL),
+			array(array('uid' => 0), NULL),
+			array(array('tx_fed_fcefile' => 'test:Error.html'), NULL),
+			array(array('tx_fed_fcefile' => 'fluidcontent:Error.html'), $file),
 		);
 	}
 
@@ -88,14 +89,6 @@ class ContentProviderTest extends UnitTestCase {
 	public function getTemplatePathAndFilenameOverrideTestValues() {
 		$path = ExtensionManagementUtility::extPath('fluidcontent');
 		return array(
-			array(
-				'EXT:fluidcontent/Resources/Private/Templates/Content/Index.html',
-				$path . 'Resources/Private/Templates/Content/Index.html',
-			),
-			array(
-				$path . 'Resources/Private/Templates/Content/Index.html',
-				$path . 'Resources/Private/Templates/Content/Index.html',
-			),
 			array(
 				'EXT:fluidcontent/Resources/Private/Templates/Content/Error.html',
 				$path . 'Resources/Private/Templates/Content/Error.html',

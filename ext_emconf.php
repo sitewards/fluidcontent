@@ -22,17 +22,17 @@ $EM_CONF[$_EXTKEY] = array(
 	'conflicts' => '',
 	'priority' => '',
 	'module' => '',
-	'state' => 'stable',
+	'state' => 'beta',
 	'internal' => '',
 	'uploadfolder' => 0,
 	'createDirs' => '',
 	'modify_tables' => '',
 	'clearCacheOnLoad' => 1,
 	'lockType' => '',
-	'version' => '4.2.3',
+	'version' => '4.2.4',
 	'constraints' => array(
 		'depends' => array(
-			'typo3' => '6.1.0-7.1.99',
+			'typo3' => '6.2.0-7.4.99',
 			'cms' => '',
 			'flux' => '7.2.0-7.2.99',
 		),
@@ -45,5 +45,3 @@ $EM_CONF[$_EXTKEY] = array(
 	),
 	'_md5_values_when_last_written' => '',
 );
-
-?>

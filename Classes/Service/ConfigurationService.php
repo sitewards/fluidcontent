@@ -17,8 +17,6 @@ use FluidTYPO3\Flux\Service\FluxService;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
-use FluidTYPO3\Flux\Utility\PathUtility;
-use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\StringFrontend;
 use TYPO3\CMS\Core\SingletonInterface;
@@ -32,6 +30,16 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * to Fluid Content Elements.
  */
 class ConfigurationService extends FluxService implements SingletonInterface {
+
+	/**
+	 * Default Width for icon
+	 */
+	const ICON_WIDTH = 24;
+
+	/**
+	 * Default Height for icon
+	 */
+	const ICON_HEIGHT = 24;
 
 	/**
 	 * @var CacheManager
@@ -81,15 +89,6 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	}
 
 	/**
-	 * @return void
-	 */
-	public function initializeObject() {
-		if (TRUE === $this->isBackendMode()) {
-			$this->writeCachedConfigurationIfMissing();
-		}
-	}
-
-	/**
 	 * @return boolean
 	 */
 	protected function isBackendMode() {
@@ -116,6 +115,19 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getPageTsConfig() {
+		$pageTsConfig = '';
+		$templates = $this->getAllRootTypoScriptTemplates();
+		foreach ($templates as $template) {
+			$pageUid = (integer) $template['pid'];
+			$pageTsConfig .= $this->renderPageTypoScriptForPageUid($pageUid);
+		}
+		return $pageTsConfig;
+	}
+
+	/**
 	 * @return void
 	 */
 	public function writeCachedConfigurationIfMissing() {
@@ -123,13 +135,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		$cache = $this->manager->getCache('fluidcontent');
 		$hasCache = $cache->has('pageTsConfig');
 		if (FALSE === $hasCache) {
-			$pageTsConfig = '';
-			$templates = $this->getAllRootTypoScriptTemplates();
-			foreach ($templates as $template) {
-				$pageUid = (integer) $template['pid'];
-				$pageTsConfig .= $this->renderPageTypoScriptForPageUid($pageUid);
-			}
-			$cache->set('pageTsConfig', $pageTsConfig, array(), 86400);
+			$cache->set('pageTsConfig', $this->getPageTsConfig(), array(), 86400);
 		}
 	}
 
@@ -140,6 +146,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	protected function renderPageTypoScriptForPageUid($pageUid) {
 		$this->backupPageUidForConfigurationManager();
 		$this->overrideCurrentPageUidForConfigurationManager($pageUid);
+		$pageTsConfig = '';
 		try {
 			$collection = $this->getContentConfiguration();
 			$wizardTabs = $this->buildAllWizardTabGroups($collection);
@@ -242,7 +249,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			$viewContext->setTemplatePaths($templatePaths);
 			$viewContext->setSectionName('Configuration');
 			foreach ($templatePaths->getTemplateRootPaths() as $templateRootPath) {
-				$files = GeneralUtility::getAllFilesAndFoldersInPath($files, $templateRootPath . '/' . $controllerName, 'html');
+				$files = GeneralUtility::getAllFilesAndFoldersInPath($files, $templateRootPath . '/' . $controllerName .'/', 'html');
 				if (0 < count($files)) {
 					foreach ($files as $templateFilename) {
 						$actionName = pathinfo($templateFilename, PATHINFO_FILENAME);
@@ -311,9 +318,25 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @return string
 	 */
 	protected function buildWizardTabItem($tabId, $id, $form, $templateFileIdentity) {
-		$icon = MiscellaneousUtility::getIconForTemplate($form);
+		if (TRUE === method_exists('FluidTYPO3\\Flux\\Utility\\MiscellaneousUtility', 'getIconForTemplate')) {
+			$icon = MiscellaneousUtility::getIconForTemplate($form);
+			$icon = ($icon ? $icon : $this->defaultIcon);
+		} else {
+			$icon = $this->defaultIcon;
+		}
 		$description = $form->getDescription();
-		$iconFileRelativePath = ($icon ? $icon : $this->defaultIcon);
+		if (0 === strpos($icon, '../')) {
+			$icon = substr($icon, 2);
+		}
+
+		if ('/' === $icon[0]) {
+			$icon = realpath(PATH_site . $icon);
+		}
+
+		if (TRUE === file_exists($icon) && TRUE === method_exists('FluidTYPO3\\Flux\\Utility\\MiscellaneousUtility', 'createIcon')) {
+			$icon = '../..' . MiscellaneousUtility::createIcon($icon, self::ICON_WIDTH, self::ICON_HEIGHT);
+		}
+
 		return sprintf('
 			mod.wizards.newContentElement.wizardItems.%s.elements.%s {
 				icon = %s
@@ -327,7 +350,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			',
 			$tabId,
 			$id,
-			$iconFileRelativePath,
+			$icon,
 			$form->getLabel(),
 			$description,
 			$templateFileIdentity

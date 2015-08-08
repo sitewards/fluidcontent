@@ -10,6 +10,7 @@ namespace FluidTYPO3\Fluidcontent\Controller;
 
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
 use FluidTYPO3\Flux\Controller\AbstractFluxController;
+use FluidTYPO3\Flux\Utility\RecursiveArrayUtility;
 use TYPO3\CMS\Extbase\Mvc\View\ViewInterface;
 
 /**
@@ -46,4 +47,23 @@ abstract class AbstractContentController extends AbstractFluxController implemen
 		$view->assign('session', $_SESSION);
 	}
 
+	/**
+	 * @return void
+	 */
+	protected function initializeViewVariables() {
+		$row = $this->getRecord();
+		$form = $this->provider->getForm($row);
+		$generalSettings = $this->configurationService->convertFlexFormContentToArray($row['pi_flexform'], $form);
+		$this->settings = RecursiveArrayUtility::merge($this->settings, $generalSettings, FALSE, FALSE);
+		//Support for FCC
+		if ($row['content_options']) {
+			$contentSettings = $this->configurationService->convertFlexFormContentToArray($row['content_options'], $form);
+			if (FALSE === isset($this->settings['content'])) {
+				$this->settings['content'] = $contentSettings;
+			} else {
+				$this->settings['content'] = RecursiveArrayUtility::merge($this->settings['content'], $contentSettings);
+			}
+		}
+		parent::initializeViewVariables();
+	}
 }

@@ -63,6 +63,7 @@ class ContentSelector {
 	 */
 	protected function getSelectedIcon(array $setup, $value) {
 		foreach ($setup as $configuration) {
+			/** @var Form $form */
 			foreach ($configuration as $form) {
 				$optionValue = $form->getOption('contentElementId');
 				if ($optionValue === $value) {
@@ -90,6 +91,7 @@ class ContentSelector {
 	 * @return string
 	 */
 	protected function renderOptionGroup(array $configuration, $groupLabel, $value) {
+		$optionGroup = '';
 		foreach ($configuration as $form) {
 			/** @var Form $form */
 			$optionValue = $form->getOption('contentElementId');

@@ -9,15 +9,14 @@ namespace FluidTYPO3\Fluidcontent\Provider;
  */
 
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
+use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ContentProvider as FluxContentProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
-use FluidTYPO3\Flux\Utility\ResolveUtility;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Content object configuration provider
@@ -82,6 +81,23 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 
 	/**
 	 * @param array $row
+	 * @return \FluidTYPO3\Flux\Form|NULL
+	 */
+	public function getForm(array $row) {
+		$form = parent::getForm($row);
+		$moveSortingProperty = (
+			defined('FluidTYPO3\\Flux\\Form::OPTION_SORTING')
+			&& FALSE === $form->hasOption(Form::OPTION_SORTING)
+			&& TRUE === $form->hasOption('Fluidcontent.sorting')
+		);
+		if (NULL !== $form && TRUE === $moveSortingProperty) {
+			$form->setOption(Form::OPTION_SORTING, $form->getOption('Fluidcontent.sorting'));
+		}
+		return $form;
+	}
+
+	/**
+	 * @param array $row
 	 * @return string
 	 */
 	public function getTemplatePathAndFilename(array $row) {
@@ -126,9 +142,9 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 		$action = $row['tx_fed_fcefile'];
 		if (FALSE !== strpos($action, ':')) {
 			$extensionName = array_shift(explode(':', $action));
-		}
-		if (FALSE === empty($extensionName)) {
-			$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
+			if (FALSE === empty($extensionName)) {
+				$extensionKey = ExtensionNamingUtility::getExtensionKey($extensionName);
+			}
 		}
 		return $extensionKey;
 	}
