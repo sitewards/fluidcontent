@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FluidTYPO3/flux.git",
-                "reference": "41f36a8a3ed8dd1588c542b514448cd57de73ee1"
+                "reference": "dee62c5ff38330663336e7854b0f08f63acf105a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FluidTYPO3/flux/zipball/41f36a8a3ed8dd1588c542b514448cd57de73ee1",
-                "reference": "41f36a8a3ed8dd1588c542b514448cd57de73ee1",
+                "url": "https://api.github.com/repos/FluidTYPO3/flux/zipball/dee62c5ff38330663336e7854b0f08f63acf105a",
+                "reference": "dee62c5ff38330663336e7854b0f08f63acf105a",
                 "shasum": ""
             },
             "require-dev": {
@@ -41,7 +41,7 @@
             ],
             "description": "The flux package from FluidTYPO3",
             "homepage": "http://fluidtypo3.org",
-            "time": "2015-08-07 18:48:22"
+            "time": "2015-08-08 00:12:19"
         }
     ],
     "packages-dev": [
@@ -361,16 +361,16 @@
         },
         {
             "name": "namelesscoder/typo3-repository-client",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/NamelessCoder/typo3-repository-client.git",
-                "reference": "51e4b17dd685c30c0434493d70400b6bf9a19723"
+                "reference": "39759d9d58aeee31d75f6657b4df79a6d81d53b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/NamelessCoder/typo3-repository-client/zipball/51e4b17dd685c30c0434493d70400b6bf9a19723",
-                "reference": "51e4b17dd685c30c0434493d70400b6bf9a19723",
+                "url": "https://api.github.com/repos/NamelessCoder/typo3-repository-client/zipball/39759d9d58aeee31d75f6657b4df79a6d81d53b6",
+                "reference": "39759d9d58aeee31d75f6657b4df79a6d81d53b6",
                 "shasum": ""
             },
             "require-dev": {
@@ -400,7 +400,7 @@
                 }
             ],
             "description": "Client for interacting with the official TYPO3 Extension Repository (TER). Contains API and CLI scripts.",
-            "time": "2015-03-15 02:00:17"
+            "time": "2015-08-07 22:16:09"
         },
         {
             "name": "phpunit/php-code-coverage",
