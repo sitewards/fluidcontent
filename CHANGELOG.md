@@ -1,5 +1,16 @@
 # Fluidcontent Change log
 
+4.3.1 - 2015-08-08
+------------------
+	- [Bugfix when running with Flux 7.2](https://github.com/FluidTYPO3/fluidcontent/commit/dbc1d2095c8274a7b233ea398ce82d4c31ec6827)
+	- Support for coming Flux 7.3 (metadata only)
+
+4.3.0 - 2015-08-08
+------------------
+
+- Minor release
+	- Support for TYPO3 7.4
+
 4.2.4 - 2015-07-01
 ------------------
 
