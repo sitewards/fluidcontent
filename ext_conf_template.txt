@@ -1,6 +1,5 @@
-# cat=basic/enable; type=integer; label=Set the width  of the content element icon. 0 = no scaling
-iconWidth = 24
+# cat=basic/enable; type=string; label=Set the width  of the content element icon:Supports c (crop) and m (keeping the aspect ratio) 0 = no scaling
+iconWidth = 24m
 
-# cat=basic/enable; type=integer; label=Set the height of the content element icon. 0 = no scaling
-iconHeight = 24
-
+# cat=basic/enable; type=string; label=Set the height of the content element icon:Supports c (crop) and m (keeping the aspect ratio)  0 = no scaling
+iconHeight = 24m

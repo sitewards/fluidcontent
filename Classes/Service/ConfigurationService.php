@@ -34,12 +34,12 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	/**
 	 * Default Width for icon
 	 */
-	const ICON_WIDTH = 24;
+	const ICON_WIDTH = '24m';
 
 	/**
 	 * Default Height for icon
 	 */
-	const ICON_HEIGHT = 24;
+	const ICON_HEIGHT = '24m';
 
 	/**
 	 * @var array
