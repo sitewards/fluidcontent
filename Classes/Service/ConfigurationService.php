@@ -34,12 +34,12 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	/**
 	 * Default Width for icon
 	 */
-	const ICON_WIDTH = 24;
+	const ICON_WIDTH = '24m';
 
 	/**
 	 * Default Height for icon
 	 */
-	const ICON_HEIGHT = 24;
+	const ICON_HEIGHT = '24m';
 
 	/**
 	 * @var array
@@ -90,11 +90,18 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * Constructor
 	 */
 	public function __construct() {
-		$this->defaultIcon = '../' . ExtensionManagementUtility::siteRelPath('fluidcontent') . 'Resources/Public/Icons/Plugin.png';
+		$this->defaultIcon = '../' . ExtensionManagementUtility::siteRelPath('fluidcontent') . 'Resources/Public/Icons/Plugin.svg';
 
 		$this->extConf = unserialize($GLOBALS['TYPO3_CONF_VARS']['EXT']['extConf']['fluidcontent']);
 		$this->extConf['iconWidth'] = $this->extConf['iconWidth'] ? : self::ICON_WIDTH;
 		$this->extConf['iconHeight'] = $this->extConf['iconHeight'] ? : self::ICON_HEIGHT;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDefaultIcon() {
+		return $this->defaultIcon;
 	}
 
 	/**
@@ -338,11 +345,10 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			$icon = substr($icon, 2);
 		}
 
-		if ('/' === $icon[0]) {
-			$icon = realpath(PATH_site . $icon);
-		}
-
 		if (TRUE === file_exists($icon) && TRUE === method_exists('FluidTYPO3\\Flux\\Utility\\MiscellaneousUtility', 'createIcon')) {
+			if ('/' === $icon[0]) {
+				$icon = realpath(PATH_site . $icon);
+			}
 			$icon = '../..' . MiscellaneousUtility::createIcon($icon, $this->extConf['iconWidth'], $this->extConf['iconHeight']);
 		}
 
