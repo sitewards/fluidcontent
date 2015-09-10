@@ -1,8 +1,12 @@
 # Fluidcontent Change log
 
-upcoming
+4.3.2 - 2015-09-10
 ------------------
 
+- Avoid `realpath()` on icons when Flux version is older, causing bad icon references
+	- [Source commit with more info](https://github.com/FluidTYPO3/fluidcontent/commit/76a98ff5907c97bfac71e93d2dc7884807503258)
+- Avoid `E_NOTICE` on missing array index
+	- [Source commit with more info](https://github.com/FluidTYPO3/fluidcontent/commit/6436d1c6d70d32483df92cf6606c23823dda898a)
 - [#263](https://github.com/FluidTYPO3/fluidcontent/pull/263) Default SVG icon for CE is shown in case no icon provided
 - [#273](https://github.com/FluidTYPO3/fluidcontent/pull/273) Icon size definitions in EM can now be strings
 	- Allows TYPO3 fancy definitions, like `24m` or `24c`
@@ -24,7 +28,7 @@ upcoming
 - :exclamation: No more testing for PHP 5.4
 	- Fluidcontent still supports TYPO3 6.2, which can be run on PHP 5.4, but it is adviced to upgrade your PHP to 5.5 (which is also supported by 6.2) at least
 - :exclamation: Default template `Index.html` removed
-	- [Source commit with more info](https://github.com/FluidTYPO3/fluidcontent/commit/c05dbd237dedbf84c69583626ef7096caf9dcb99) 
+	- [Source commit with more info](https://github.com/FluidTYPO3/fluidcontent/commit/c05dbd237dedbf84c69583626ef7096caf9dcb99)
 - [#258](https://github.com/FluidTYPO3/fluidcontent/issues/258) `{settings}` are enriched with content settings, when *EXT:fluidcontent_core* is used
 - [#227](https://github.com/FluidTYPO3/fluidcontent/issues/227) [#248](https://github.com/FluidTYPO3/fluidcontent/issues/248) Fixed broken inclusion of template files from subfolders
 - [#253](https://github.com/FluidTYPO3/fluidcontent/issues/253) Fixed missing icons in "new CE" Wizard
