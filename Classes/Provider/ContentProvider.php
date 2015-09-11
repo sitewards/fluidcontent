@@ -181,7 +181,7 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 */
 	public function getControllerActionReferenceFromRecord(array $row) {
 		$fileReference = $row['tx_fed_fcefile'];
-		return TRUE === empty($fileReference) ? 'Fluidcontent:index.html' : $fileReference;
+		return TRUE === empty($fileReference) ? 'Fluidcontent:error.html' : $fileReference;
 	}
 
 	/**
@@ -196,6 +196,23 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 			return 100;
 		}
 		return 0;
+	}
+
+	/**
+	 * Get preview chunks - header and content - as
+	 * array(string $headerContent, string $previewContent, boolean $continueRendering)
+	 *
+	 * @param array $row The record data to be analysed for variables to use in a rendered preview
+	 * @return array
+	 */
+	public function getPreview(array $row) {
+
+		if ($this->contentObjectType !== $row['CType']) {
+			return array(NULL, NULL, TRUE);
+		}
+
+		$previewContent = $this->getPreviewView()->getPreview($this, $row);
+		return array(NULL, $previewContent, empty($previewContent));
 	}
 
 }

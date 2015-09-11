@@ -65,7 +65,7 @@ class ContentProviderTest extends UnitTestCase {
 		$path = ExtensionManagementUtility::extPath('fluidcontent');
 		$file = $path . 'Resources/Private/Templates/Content/Error.html';
 		return array(
-			array(array('uid' => 0), NULL),
+			array(array('uid' => 0), $file),
 			array(array('tx_fed_fcefile' => 'test:Error.html'), NULL),
 			array(array('tx_fed_fcefile' => 'fluidcontent:Error.html'), $file),
 		);
@@ -141,7 +141,7 @@ class ContentProviderTest extends UnitTestCase {
 	 */
 	public function getControllerActionFromRecordTestValues() {
 		return array(
-			array(array('uid' => 0), 'index'),
+			array(array('uid' => 0), 'error'),
 			array(array('tx_fed_fcefile' => 'test:test'), 'test'),
 		);
 	}
