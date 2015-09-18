@@ -168,4 +168,65 @@ class ContentProviderTest extends UnitTestCase {
 		);
 	}
 
+	/**
+	 * @test
+	 * @dataProvider getPreviewTestValues
+	 * @param $record
+	 * @param $expected
+	 *
+	 * tests if defaut previews for content elements of different types
+	 * each with a tx_fed_tcefile defined
+	 */
+	public function testGetPreviewForTextElement($record, $expected) {
+		$instance = $this->createProviderInstance();
+		$result = $instance->getPreview($record);
+		$this->assertEquals($expected, $result);
+	}
+
+	public function getPreviewTestValues() {
+		return array(
+			array(
+				array(
+					'uid' => 1,
+					'CType' => 'text',
+					'header' => 'this is a simple text element',
+					'tx_fed_tcefile' => 'dummy-fed-file.txt'
+				),
+				array(
+					NULL,
+					NULL,
+					TRUE
+				)
+			),
+			array(
+				array(
+					'uid' => 1,
+					'CType' => 'fluidcontent_content',
+					'header' => 'this is a simple text element',
+					'tx_fed_tcefile' => 'dummy-fed-file.txt'
+				),
+				array(
+					NULL,
+					'<div class="alert alert-warning">
+		<div class="media">
+			<div class="media-left">
+						<span class="fa-stack fa-lg">
+							<i class="fa fa-circle fa-stack-2x"></i>
+							<i class="fa fa-exclamation fa-stack-1x"></i>
+						</span>
+			</div>
+			<div class="media-body">
+				<h4 class="alert-title">Warning</h4>
+
+				<div class="alert-message">
+					Fluid Content type not selected - edit this element to fix this!
+				</div>
+			</div>
+		</div>
+	</div>',
+					FALSE
+				)
+			)
+		);
+	}
 }
