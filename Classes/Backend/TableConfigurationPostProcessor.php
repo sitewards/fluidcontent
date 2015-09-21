@@ -8,6 +8,7 @@ namespace FluidTYPO3\Fluidcontent\Backend;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
 use TYPO3\CMS\Core\Database\TableConfigurationPostProcessingHookInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -23,11 +24,17 @@ class TableConfigurationPostProcessor implements TableConfigurationPostProcessin
 	 * @return void
 	 */
 	public function processData() {
-		/** @var \FluidTYPO3\Fluidcontent\Service\ConfigurationService $configurationService */
+		ExtensionManagementUtility::addPageTSConfig($this->getConfigurationService()->getPageTsConfig());
+	}
+
+	/**
+	 * @return ConfigurationService
+	 */
+	protected function getConfigurationService() {
+		/** @var ConfigurationService $configurationService */
 		$configurationService = GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\ObjectManager')
 			->get('FluidTYPO3\Fluidcontent\Service\ConfigurationService');
-
-		ExtensionManagementUtility::addPageTSConfig($configurationService->getPageTsConfig());
+		return $configurationService;
 	}
 
 }
