@@ -179,6 +179,8 @@ class ContentProviderTest extends UnitTestCase {
 	 */
 	public function testGetPreviewForTextElement($record, $expected) {
 		$instance = $this->createProviderInstance();
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('get'));
+		$instance->injectRecordService($recordService);
 		$result = $instance->getPreview($record);
 		$this->assertEquals($expected, $result);
 	}
