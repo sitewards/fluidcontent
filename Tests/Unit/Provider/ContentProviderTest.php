@@ -41,10 +41,21 @@ class ContentProviderTest extends UnitTestCase {
 		return $instance;
 	}
 
+	/**
+	 * @test
+	 */
 	public function testPerformsInjections() {
 		$instance = $this->createProviderInstance();
-		$this->assertAttributeInstanceOf('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface', 'configurationManager', $instance);
-		$this->assertAttributeInstanceOf('FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService', 'configurationService', $instance);
+		$this->assertAttributeInstanceOf(
+			'TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface',
+			'configurationManager',
+			$instance
+		);
+		$this->assertAttributeInstanceOf(
+			'FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService',
+			'contentConfigurationService',
+			$instance
+		);
 	}
 
 	/**

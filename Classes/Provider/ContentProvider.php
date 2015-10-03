@@ -61,7 +61,7 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	/**
 	 * @var ConfigurationService
 	 */
-	protected $configurationService;
+	protected $contentConfigurationService;
 
 	/**
 	 * @param ConfigurationManagerInterface $configurationManager
@@ -75,8 +75,8 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 * @param ConfigurationService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(ConfigurationService $configurationService) {
-		$this->configurationService = $configurationService;
+	public function injectContentConfigurationService(ConfigurationService $configurationService) {
+		$this->contentConfigurationService = $configurationService;
 	}
 
 	/**
@@ -128,7 +128,7 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 */
 	public function getTemplatePaths(array $row) {
 		$extensionName = $this->getExtensionKey($row);
-		$paths = $this->configurationService->getContentConfiguration($extensionName);
+		$paths = $this->contentConfigurationService->getContentConfiguration($extensionName);
 		if (TRUE === is_array($paths) && FALSE === empty($paths)) {
 			$paths = PathUtility::translatePath($paths);
 		}
