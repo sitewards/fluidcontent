@@ -1,8 +1,10 @@
 # Fluidcontent Change log
 
-Upcoming
+4.3.3 - 2015-10-24
 ------------------
 
+- [TYPO3 7.5 is now officially supported](https://github.com/FluidTYPO3/fluidcontent/commit/99a3381a81dc89ff0b570a3f7b837157827ff1b1)
+- [#290](https://github.com/FluidTYPO3/fluidcontent/pull/290) Bugfix for order of realpath/file_exists when processing icon file
 - [#278](https://github.com/FluidTYPO3/fluidcontent/pull/278) In case no *Fluid Content type* is selected for content with CType `fluidcontent_content` an error message is shown in FE and BE
 	- Template `Content/Error.html` is used for error message
 	- Additionally rendering of preview is suppressed, when *Fluid Content type* is selected, but CType is not `fluidcontent_content`
