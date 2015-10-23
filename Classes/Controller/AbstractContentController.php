@@ -23,14 +23,14 @@ abstract class AbstractContentController extends AbstractFluxController implemen
 	/**
 	 * @var ConfigurationService
 	 */
-	protected $configurationService;
+	protected $contentConfigurationService;
 
 	/**
 	 * @param ConfigurationService $configurationService
 	 * @return void
 	 */
-	public function injectConfigurationService(ConfigurationService $configurationService) {
-		$this->configurationService = $configurationService;
+	public function injectContentConfigurationService(ConfigurationService $configurationService) {
+		$this->contentConfigurationService = $configurationService;
 	}
 
 	/**
@@ -53,11 +53,11 @@ abstract class AbstractContentController extends AbstractFluxController implemen
 	protected function initializeViewVariables() {
 		$row = $this->getRecord();
 		$form = $this->provider->getForm($row);
-		$generalSettings = $this->configurationService->convertFlexFormContentToArray($row['pi_flexform'], $form);
+		$generalSettings = $this->contentConfigurationService->convertFlexFormContentToArray($row['pi_flexform'], $form);
 		$this->settings = RecursiveArrayUtility::merge($this->settings, $generalSettings, FALSE, FALSE);
 		// Add fluidcontent_core form settings (to avoid flux:form.data in templates)
 		if (FALSE === empty($row['content_options'])) {
-			$contentSettings = $this->configurationService->convertFlexFormContentToArray($row['content_options'], $form);
+			$contentSettings = $this->contentConfigurationService->convertFlexFormContentToArray($row['content_options'], $form);
 			if (FALSE === isset($this->settings['content'])) {
 				$this->settings['content'] = $contentSettings;
 			} else {
