@@ -13,6 +13,7 @@ if (TRUE === version_compare(TYPO3_version, '7.1', '<')) {
 	'tx_fed_fcefile' => array(
 		'exclude' => 1,
 		'label' => 'LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile',
+		'displayCond' => 'FIELD:CType:=:fluidcontent_content',
 		'config' => array(
 			'type' => 'user',
 			'userFunc' => $contentSelector,

@@ -41,10 +41,21 @@ class ContentProviderTest extends UnitTestCase {
 		return $instance;
 	}
 
+	/**
+	 * @test
+	 */
 	public function testPerformsInjections() {
 		$instance = $this->createProviderInstance();
-		$this->assertAttributeInstanceOf('TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface', 'configurationManager', $instance);
-		$this->assertAttributeInstanceOf('FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService', 'configurationService', $instance);
+		$this->assertAttributeInstanceOf(
+			'TYPO3\\CMS\\Extbase\\Configuration\\ConfigurationManagerInterface',
+			'configurationManager',
+			$instance
+		);
+		$this->assertAttributeInstanceOf(
+			'FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService',
+			'contentConfigurationService',
+			$instance
+		);
 	}
 
 	/**
@@ -65,7 +76,7 @@ class ContentProviderTest extends UnitTestCase {
 		$path = ExtensionManagementUtility::extPath('fluidcontent');
 		$file = $path . 'Resources/Private/Templates/Content/Error.html';
 		return array(
-			array(array('uid' => 0), NULL),
+			array(array('uid' => 0), $file),
 			array(array('tx_fed_fcefile' => 'test:Error.html'), NULL),
 			array(array('tx_fed_fcefile' => 'fluidcontent:Error.html'), $file),
 		);
@@ -141,7 +152,7 @@ class ContentProviderTest extends UnitTestCase {
 	 */
 	public function getControllerActionFromRecordTestValues() {
 		return array(
-			array(array('uid' => 0), 'index'),
+			array(array('uid' => 0), 'error'),
 			array(array('tx_fed_fcefile' => 'test:test'), 'test'),
 		);
 	}
@@ -168,4 +179,67 @@ class ContentProviderTest extends UnitTestCase {
 		);
 	}
 
+	/**
+	 * @test
+	 * @dataProvider getPreviewTestValues
+	 * @param $record
+	 * @param $expected
+	 *
+	 * tests if defaut previews for content elements of different types
+	 * each with a tx_fed_tcefile defined
+	 */
+	public function testGetPreviewForTextElement($record, $expected) {
+		$instance = $this->createProviderInstance();
+		$recordService = $this->getMock('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService', array('get'));
+		$instance->injectRecordService($recordService);
+		$result = $instance->getPreview($record);
+		$this->assertEquals($expected, $result);
+	}
+
+	public function getPreviewTestValues() {
+		return array(
+			array(
+				array(
+					'uid' => 1,
+					'CType' => 'text',
+					'header' => 'this is a simple text element',
+					'tx_fed_tcefile' => 'dummy-fed-file.txt'
+				),
+				array(
+					NULL,
+					NULL,
+					TRUE
+				)
+			),
+			array(
+				array(
+					'uid' => 1,
+					'CType' => 'fluidcontent_content',
+					'header' => 'this is a simple text element',
+					'tx_fed_tcefile' => 'dummy-fed-file.txt'
+				),
+				array(
+					NULL,
+					'<div class="alert alert-warning">
+		<div class="media">
+			<div class="media-left">
+						<span class="fa-stack fa-lg">
+							<i class="fa fa-circle fa-stack-2x"></i>
+							<i class="fa fa-exclamation fa-stack-1x"></i>
+						</span>
+			</div>
+			<div class="media-body">
+				<h4 class="alert-title">Warning</h4>
+
+				<div class="alert-message">
+					Fluid Content type not selected - edit this element to fix this!
+				</div>
+			</div>
+		</div>
+	</div>',
+					FALSE
+				)
+			)
+		);
+	}
 }

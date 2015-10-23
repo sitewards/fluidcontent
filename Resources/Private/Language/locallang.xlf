@@ -30,6 +30,9 @@
 			<trans-unit id="tt_content.tx_fed_fcefile.emptyMessage">
 				<source>Fluid Content type not selected - edit this element in the TYPO3 backend to fix this!</source>
 			</trans-unit>
+			<trans-unit id="tt_content.tx_fed_fcefile.emptyMessageinBackend">
+				<source>Fluid Content type not selected - edit this element to fix this!</source>
+			</trans-unit>
 		</body>
 	</file>
 </xliff>
