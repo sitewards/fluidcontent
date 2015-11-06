@@ -22,7 +22,10 @@
         "irc": "irc://irc.freenode.org/fedext",
         "issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
     },
-    "suggest": {
+     "require": {
+        "php": ">=5.4.0"
+    },
+   "suggest": {
         "fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid."
     }
 }
