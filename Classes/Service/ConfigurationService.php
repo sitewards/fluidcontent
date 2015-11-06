@@ -19,6 +19,8 @@ use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\StringFrontend;
+use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
+use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -345,18 +347,22 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			$icon = substr($icon, 2);
 		}
 
+		$iconIdentifier = NULL;
 		if (TRUE === method_exists('FluidTYPO3\\Flux\\Utility\\MiscellaneousUtility', 'createIcon')) {
 			if ('/' === $icon[0]) {
 				$icon = realpath(PATH_site . $icon);
 			}
 			if (TRUE === file_exists($icon)) {
-				$icon = '../..' . MiscellaneousUtility::createIcon($icon, $this->extConf['iconWidth'], $this->extConf['iconHeight']);
+				$icon = str_replace('//', '/', PATH_site . MiscellaneousUtility::createIcon($icon, $this->extConf['iconWidth'], $this->extConf['iconHeight']));
+				$iconIdentifier = 'fluidcontent-' . $id;
+				$iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
+				$iconRegistry->registerIcon($iconIdentifier, BitmapIconProvider::class, array('source' => $icon));
 			}
 		}
 
 		return sprintf('
 			mod.wizards.newContentElement.wizardItems.%s.elements.%s {
-				icon = %s
+				iconIdentifier = %s
 				title = %s
 				description = %s
 				tt_content_defValues {
@@ -367,7 +373,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			',
 			$tabId,
 			$id,
-			$icon,
+			$iconIdentifier,
 			$form->getLabel(),
 			$description,
 			$templateFileIdentity
