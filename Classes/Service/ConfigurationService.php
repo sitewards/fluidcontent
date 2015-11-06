@@ -24,6 +24,7 @@ use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
 
 /**
  * Configuration Service
@@ -241,7 +242,14 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 					$group = 'Content';
 				}
 				$tabId = $this->sanitizeString($group);
-				$wizardTabs[$tabId]['title'] = $group;
+				$wizardTabs[$tabId]['title'] = LocalizationUtility::translate('fluidcontent.newContentWizard.group.' . $group, ExtensionNamingUtility::getExtensionKey($extensionKey));
+				if ($wizardTabs[$tabId]['title'] === NULL) {
+					$coreTranslationReference = 'LLL:EXT:backend/Resources/Private/Language/locallang_db_new_content_el.xlf:' . $group;
+					$wizardTabs[$tabId]['title'] = LocalizationUtility::translate($coreTranslationReference, 'backend');
+					if ($coreTranslationReference == $wizardTabs[$tabId]['title']) {
+						$wizardTabs[$tabId]['title'] = $group;
+					}
+				}
 				$contentElementId = $form->getOption('contentElementId');
 				$elementTsConfig = $this->buildWizardTabItem($tabId, $id, $form, $contentElementId);
 				$wizardTabs[$tabId]['elements'][$id] = $elementTsConfig;
@@ -310,7 +318,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			$pageTsConfig .= sprintf('
 				mod.wizards.newContentElement.wizardItems.%s {
 					header = %s
-					show = %s
+					show := addToList(%s)
 					position = 0
 					key = %s
 				}
