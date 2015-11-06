@@ -267,7 +267,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			$viewContext->setTemplatePaths($templatePaths);
 			$viewContext->setSectionName('Configuration');
 			foreach ($templatePaths->getTemplateRootPaths() as $templateRootPath) {
-				$files = GeneralUtility::getAllFilesAndFoldersInPath($files, $templateRootPath . '/' . $controllerName .'/', 'html');
+				$files = GeneralUtility::getAllFilesAndFoldersInPath($files, rtrim($templateRootPath, '/') . '/' . $controllerName .'/', 'html');
 				if (0 < count($files)) {
 					foreach ($files as $templateFilename) {
 						$actionName = pathinfo($templateFilename, PATHINFO_FILENAME);
