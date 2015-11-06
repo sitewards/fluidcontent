@@ -44,13 +44,13 @@ class ContentSelector {
 	 * @return string
 	 */
 	public function renderField(array &$parameters, &$parentObject) {
-		$contentService = $this->getConfigurationService();
-		$setup = $contentService->getContentElementFormInstances();
+		$configurationService = $this->getConfigurationService();
+		$setup = $configurationService->getContentElementFormInstances();
 		$name = $parameters['itemFormElName'];
 		$value = $parameters['itemFormElValue'];
 		$selectedIcon = $this->getSelectedIcon($setup, $value);
 		if (NULL === $selectedIcon) {
-			$selectedIcon =	$contentService->getDefaultIcon();
+			$selectedIcon =	$configurationService->getDefaultIcon();
 		}
 		$options = $this->renderEmptyOption();
 		foreach ($setup as $groupLabel => $configuration) {
