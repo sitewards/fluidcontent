@@ -27,3 +27,7 @@ $autoloader->addPsr4('TYPO3\\CMS\\Frontend\\', __DIR__ . '/../vendor/typo3/cms/t
 	'fluidcontent' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 	'l10n' => \FluidTYPO3\Development\Bootstrap::CACHE_NULL,
 ));
+
+/** @var $extbaseObjectContainer \TYPO3\CMS\Extbase\Object\Container\Container */
+$extbaseObjectContainer = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance('TYPO3\CMS\Extbase\Object\Container\Container');
+$extbaseObjectContainer->registerImplementation('TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface', 'FluidTYPO3\Flux\Configuration\ConfigurationManager');
