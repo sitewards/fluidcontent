@@ -25,7 +25,7 @@
      "require": {
         "php": ">=5.5.0"
     },
-   "suggest": {
+    "suggest": {
         "fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid."
     }
 }
