@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Utility\LocalizationUtility;
+use TYPO3\CMS\Frontend\Page\PageRepository;
 
 /**
  * Configuration Service
@@ -53,6 +54,11 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @var CacheManager
 	 */
 	protected $manager;
+
+	/**
+	 * @var PageRepository
+	 */
+	protected $pageRepository;
 
 	/**
 	 * @var WorkspacesAwareRecordService
@@ -87,6 +93,14 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 */
 	public function injectRecordService(WorkspacesAwareRecordService $recordService) {
 		$this->recordService = $recordService;
+	}
+
+	/**
+	 * @param PageRepository $pageRepository
+	 * @return void
+	 */
+	public function injectPageRepository(PageRepository $pageRepository) {
+		$this->pageRepository = $pageRepository;
 	}
 
 	/**
@@ -138,7 +152,11 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 */
 	public function getPageTsConfig() {
 		$pageTsConfig = '';
-		$templates = $this->getAllRootTypoScriptTemplates();
+		if (TRUE === $this->configurationManager instanceof ConfigurationManager) {
+			$templates = $this->getTypoScriptTemplatesInRootline();
+		} else {
+			$templates = $this->getAllRootTypoScriptTemplates();
+		}
 		foreach ($templates as $template) {
 			$pageUid = (integer) $template['pid'];
 			$pageTsConfig .= $this->renderPageTypoScriptForPageUid($pageUid);
@@ -214,6 +232,24 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 */
 	protected function getAllRootTypoScriptTemplates() {
 		$condition = 'deleted = 0 AND hidden = 0 AND starttime <= :starttime AND (endtime = 0 OR endtime > :endtime)';
+		$parameters = array(
+			':starttime' => $GLOBALS['SIM_ACCESS_TIME'],
+			':endtime' => $GLOBALS['SIM_ACCESS_TIME']
+		);
+		$rootTypoScriptTemplates = $this->recordService->preparedGet('sys_template', 'pid', $condition, $parameters);
+		return $rootTypoScriptTemplates;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getTypoScriptTemplatesInRootline() {
+		$rootline = $this->pageRepository->getRootLine($this->configurationManager->getCurrentPageId());
+		$pageUids = array();
+		foreach ($rootline as $page) {
+			$pageUids[] = $page['uid'];
+		}
+		$condition = 'deleted = 0 AND hidden = 0 AND starttime <= :starttime AND (endtime = 0 OR endtime > :endtime) AND pid IN (' . implode(',', $pageUids) . ')';
 		$parameters = array(
 			':starttime' => $GLOBALS['SIM_ACCESS_TIME'],
 			':endtime' => $GLOBALS['SIM_ACCESS_TIME']

@@ -66,6 +66,8 @@ class ConfigurationServiceTest extends UnitTestCase {
 			->get('TYPO3\\CMS\\Core\\Cache\\CacheManager'));
 		$service->injectRecordService(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
 			->get('FluidTYPO3\\Flux\\Service\\WorkspacesAwareRecordService'));
+		$service->injectPageRepository(GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
+			->get('TYPO3\CMS\Frontend\Page\PageRepository'));
 		$service->writeCachedConfigurationIfMissing();
 	}
 
@@ -235,6 +237,22 @@ class ConfigurationServiceTest extends UnitTestCase {
 		$this->callInaccessibleMethod($instance, 'overrideCurrentPageUidForConfigurationManager', 1);
 		$this->callInaccessibleMethod($instance, 'backupPageUidForConfigurationManager');
 		$this->callInaccessibleMethod($instance, 'restorePageUidForConfigurationManager');
+	}
+
+	/**
+	 * @test
+	 */
+	public function onlyFetchRootTypoScriptOfRootlineIfTheFluxConfigurationManagerIsInjected() {
+		$service = $this->getMock(
+			'FluidTYPO3\\Fluidcontent\\Service\\ConfigurationService',
+			array('getAllRootTypoScriptTemplates', 'renderPageTypoScriptForPageUid', 'getTypoScriptTemplatesInRootline'),
+			array(), '', FALSE
+		);
+		$service->expects($this->once())->method('getTypoScriptTemplatesInRootline')->will($this->returnValue(array()));
+		$service->expects($this->never())->method('getAllRootTypoScriptTemplates');
+
+		$service->injectConfigurationManager($this->getMock('FluidTYPO3\Flux\Configuration\ConfigurationManager'));
+		$service->getPageTsConfig();
 	}
 
 }
