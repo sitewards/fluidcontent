@@ -2,7 +2,8 @@
     "name": "fluidtypo3/fluidcontent",
     "description": "Create Flexible Content elements in pure fluid",
     "require": {
-        "fluidtypo3/flux": "*"
+        "fluidtypo3/flux": "*",
+        "php": ">=5.5.0"
     },
     "require-dev": {
         "fluidtypo3/development": "*",
@@ -21,9 +22,6 @@
     "support": {
         "irc": "irc://irc.freenode.org/fedext",
         "issues": "https://github.com/FluidTYPO3/fluidcontent/issues"
-    },
-     "require": {
-        "php": ">=5.5.0"
     },
     "suggest": {
         "fluidtypo3/fluidpages": "Gives the ability to render Page Templates with pure fluid."
