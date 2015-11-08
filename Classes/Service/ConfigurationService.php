@@ -249,6 +249,9 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		foreach ($rootline as $page) {
 			$pageUids[] = $page['uid'];
 		}
+		if (empty($pageUids)) {
+			return array();
+		}
 		$condition = 'deleted = 0 AND hidden = 0 AND starttime <= :starttime AND (endtime = 0 OR endtime > :endtime) AND pid IN (' . implode(',', $pageUids) . ')';
 		$parameters = array(
 			':starttime' => $GLOBALS['SIM_ACCESS_TIME'],
