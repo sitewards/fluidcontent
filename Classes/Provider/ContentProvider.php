@@ -207,13 +207,6 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 * @return array
 	 */
 	public function getPreview(array $row) {
-
-		if ('shortcut' === $row['CType'] && FALSE === strpos($row['records'], ',')) {
-			$originalRecord = BackendUtility::getRecord('tt_content', $row['records']);
-			$previewContent = '<br />' . $this->getPreviewView()->getPreview($this, $originalRecord);
-			return array(NULL, $previewContent, empty($previewContent));
-		}
-
 		if ($this->contentObjectType !== $row['CType']) {
 			return array(NULL, NULL, TRUE);
 		}
