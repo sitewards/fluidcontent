@@ -3,11 +3,7 @@ if (!defined('TYPO3_MODE')) {
 	die ('Access denied.');
 }
 
-if (TRUE === version_compare(TYPO3_version, '7.1', '<')) {
-	$contentSelector = 'FluidTYPO3\Fluidcontent\Backend\LegacyContentSelector->renderField';
-} else {
-	$contentSelector = 'FluidTYPO3\Fluidcontent\Backend\ContentSelector->renderField';
-}
+$contentSelector = 'FluidTYPO3\Fluidcontent\Backend\ContentSelector->renderField';
 
 \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addTCAcolumns('tt_content', array(
 	'tx_fed_fcefile' => array(
