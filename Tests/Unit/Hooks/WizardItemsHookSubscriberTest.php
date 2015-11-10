@@ -58,7 +58,7 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 		/** @var WizardItemsHookSubscriber $instance */
 		$instance = $objectManager->get('FluidTYPO3\\Fluidcontent\\Hooks\\WizardItemsHookSubscriber');
 		$emulatedPageAndContentRecord = array('uid' => 1, 'tx_flux_column' => 'name');
-		$controller = $this->getMock(NewContentElementController::class, array('init'));
+		$controller = $this->getMock(NewContentElementController::class, array('init'), array(), '', FALSE);
 		$controller->colPos = 0;
 		$controller->uid_pid = -1;
 		$grid = new Grid();
@@ -161,7 +161,7 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 		$recordService->expects($this->once())->method('getSingle')->willReturn(NULL);
 		$instance->injectConfigurationService($configurationService);
 		$instance->injectRecordService($recordService);
-		$parent = $this->getMock(NewContentElementController::class, array('init'));
+		$parent = $this->getMock(NewContentElementController::class, array('init'), array(), '', FALSE);
 		$items = array();
 		$instance->manipulateWizardItems($items, $parent);
 	}
@@ -191,7 +191,7 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 		$recordService->expects($this->once())->method('getSingle')->willReturn($record);
 		$instance->injectConfigurationService($configurationService);
 		$instance->injectRecordService($recordService);
-		$parent = $this->getMock(NewContentElementController::class, array('init'));
+		$parent = $this->getMock(NewContentElementController::class, array('init'), array(), '', FALSE);
 		$parent->colPos = 1;
 		$items = array();
 		$instance->manipulateWizardItems($items, $parent);
