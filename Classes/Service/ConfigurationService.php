@@ -20,6 +20,7 @@ use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
 use TYPO3\CMS\Core\Cache\Frontend\StringFrontend;
 use TYPO3\CMS\Core\Imaging\IconProvider\BitmapIconProvider;
+use TYPO3\CMS\Core\Imaging\IconProvider\SvgIconProvider;
 use TYPO3\CMS\Core\Imaging\IconRegistry;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -399,11 +400,19 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			if ('/' === $icon[0]) {
 				$icon = realpath(PATH_site . $icon);
 			}
-			if (TRUE === file_exists($icon)) {
-				$icon = str_replace('//', '/', PATH_site . MiscellaneousUtility::createIcon($icon, $this->extConf['iconWidth'], $this->extConf['iconHeight']));
+			if (TRUE === file_exists($icon) && TRUE === is_file($icon)) {
+				$extension = pathinfo($icon, PATHINFO_EXTENSION);
+				switch (strtolower($extension)) {
+					case 'svg':
+					case 'svgz':
+						$iconProvider = SvgIconProvider::class;
+						break;
+					default:
+						$iconProvider = BitmapIconProvider::class;
+				}
 				$iconIdentifier = 'fluidcontent-' . $id;
 				$iconRegistry = GeneralUtility::makeInstance(IconRegistry::class);
-				$iconRegistry->registerIcon($iconIdentifier, BitmapIconProvider::class, array('source' => $icon));
+				$iconRegistry->registerIcon($iconIdentifier, $iconProvider, array('source' => $icon));
 			}
 		}
 
