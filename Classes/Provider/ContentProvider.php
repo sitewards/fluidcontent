@@ -13,6 +13,7 @@ use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ContentProvider as FluxContentProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\View\TemplatePaths;
 use TYPO3\CMS\Backend\Utility\BackendUtility;
@@ -81,6 +82,34 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	}
 
 	/**
+	/**+
+	 * @param array $record
+	 * @param array $configuration
+	 * @return array
+	 */
+	public function processTableConfiguration(array $row, array $configuration) {
+		$types = $this->contentConfigurationService->getContentElementFormInstances();
+		foreach ($types as $group => $forms) {
+			$enabledElements = array();
+			foreach ($forms as $form) {
+				$enabledElements[] = array(
+					$form->getLabel(),
+					$form->getOption('contentElementId'),
+					'..' . MiscellaneousUtility::getIconForTemplate($form)
+				);
+			}
+			if (!empty($enabledElements)) {
+				$configuration['processedTca']['columns']['tx_fed_fcefile']['config']['items'][] = array(
+					$group,
+					'--div--'
+				);
+				$configuration['processedTca']['columns']['tx_fed_fcefile']['config']['items'] = array_merge(
+					$configuration['processedTca']['columns']['tx_fed_fcefile']['config']['items'],
+					$enabledElements
+				);
+			}
+		}
+		return $configuration;
 	 * @param array $row
 	 * @return \FluidTYPO3\Flux\Form|NULL
 	 */
