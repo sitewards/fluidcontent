@@ -11,8 +11,11 @@ $contentSelector = 'FluidTYPO3\Fluidcontent\Backend\ContentSelector->renderField
 		'label' => 'LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile',
 		'displayCond' => 'FIELD:CType:=:fluidcontent_content',
 		'config' => array(
-			'type' => 'user',
-			'userFunc' => $contentSelector,
+			'type' => 'select',
+			'renderType' => 'selectSingle',
+			'items' => array(
+				array('LLL:EXT:fluidcontent/Resources/Private/Language/locallang.xml:tt_content.tx_fed_fcefile', '')
+			)
 		)
 	),
 ));
