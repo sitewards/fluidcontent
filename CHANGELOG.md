@@ -1,10 +1,31 @@
 # Fluidcontent Change log
 
+upcoming
+------------------
+
+- :exclamation: Support of [TYPO3 6.2 dropped](https://github.com/FluidTYPO3/fluidcontent/commit/f1df9a4b7ee563335c8f1feeb7925e6f820a7f19)
+	- As result, [legacy code removed](https://github.com/FluidTYPO3/fluidcontent/pull/313)
+	- For TYPO3 6.2 based projects there is a [*legacy*](https://github.com/FluidTYPO3/fluidcontent/tree/legacy) branch
+
+- Added support of [TYPO3 7 LTS](https://github.com/FluidTYPO3/fluidcontent/commit/f1df9a4b7ee563335c8f1feeb7925e6f820a7f19)
+
+- [#305](https://github.com/FluidTYPO3/fluidcontent/pull/305) It is possible to add custom CEs, created with Fluidcontent, to existing TYPO3 tabs at "New CE" wizard
+
+- [#295](https://github.com/FluidTYPO3/fluidcontent/pull/295) New CE wizard icons are compatible to TYPO3 7 LTS
+	- [TYPO3 core deprecation and recommendation](https://docs.typo3.org/typo3cms/extensions/core/latest/Changelog/7.5/Deprecation-69057-DeprecateIconUtilityAndMoveMethodsIntoIconFactory.html)
+
+- [#292](https://github.com/FluidTYPO3/fluidcontent/pull/292) Improved performance of multi-domain, multi-root installations
+
+- [#293](https://github.com/FluidTYPO3/fluidcontent/pull/293) Fixed issue with double back-slash in template path
+
+
 4.3.3 - 2015-10-24
 ------------------
 
 - [TYPO3 7.5 is now officially supported](https://github.com/FluidTYPO3/fluidcontent/commit/99a3381a81dc89ff0b570a3f7b837157827ff1b1)
+
 - [#290](https://github.com/FluidTYPO3/fluidcontent/pull/290) Bugfix for order of realpath/file_exists when processing icon file
+
 - [#278](https://github.com/FluidTYPO3/fluidcontent/pull/278) In case no *Fluid Content type* is selected for content with CType `fluidcontent_content` an error message is shown in FE and BE
 	- Template `Content/Error.html` is used for error message
 	- Additionally rendering of preview is suppressed, when *Fluid Content type* is selected, but CType is not `fluidcontent_content`
