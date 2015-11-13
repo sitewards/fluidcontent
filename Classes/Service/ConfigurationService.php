@@ -341,6 +341,32 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getContentTypeSelectorItems() {
+		$items = array();
+		$types = $this->getContentElementFormInstances();
+		foreach ($types as $group => $forms) {
+			$enabledElements = array();
+			foreach ($forms as $form) {
+				$enabledElements[] = array(
+					$form->getLabel(),
+					$form->getOption('contentElementId'),
+					'..' . MiscellaneousUtility::getIconForTemplate($form)
+				);
+			}
+			if (!empty($enabledElements)) {
+				$items[] = array(
+					$group,
+					'--div--'
+				);
+				$items = array_merge($items, $enabledElements);
+			}
+		}
+		return $items;
+	}
+
+	/**
 	 * Builds a big piece of pageTSconfig setup, defining
 	 * every detected content element's wizard tabs and items.
 	 *
