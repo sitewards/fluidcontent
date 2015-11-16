@@ -406,6 +406,12 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 				$iconRegistry->registerIcon($iconIdentifier, BitmapIconProvider::class, array('source' => $icon));
 			}
 		}
+		$defaultValues = array();
+		if ($form->hasOption(Form::OPTION_DEFAULT_VALUES)) {
+			foreach ($form->getOption(Form::OPTION_DEFAULT_VALUES) as $key => $value) {
+				$defaultValues[] = $key . ' = ' . $value;
+			}
+		}
 
 		return sprintf('
 			mod.wizards.newContentElement.wizardItems.%s.elements.%s {
@@ -413,6 +419,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 				title = %s
 				description = %s
 				tt_content_defValues {
+					%s
 					CType = fluidcontent_content
 					tx_fed_fcefile = %s
 				}
@@ -423,6 +430,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 			$iconIdentifier,
 			$form->getLabel(),
 			$description,
+			implode(chr(10), $defaultValues),
 			$templateFileIdentity
 		);
 	}
