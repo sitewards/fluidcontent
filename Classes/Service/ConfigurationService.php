@@ -286,7 +286,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 				if ($wizardTabs[$tabId]['title'] === NULL) {
 					$coreTranslationReference = 'LLL:EXT:backend/Resources/Private/Language/locallang_db_new_content_el.xlf:' . $group;
 					$wizardTabs[$tabId]['title'] = LocalizationUtility::translate($coreTranslationReference, 'backend');
-					if ($coreTranslationReference == $wizardTabs[$tabId]['title']) {
+					if ($wizardTabs[$tabId]['title'] === NULL || $coreTranslationReference == $wizardTabs[$tabId]['title']) {
 						$wizardTabs[$tabId]['title'] = $group;
 					}
 				}
