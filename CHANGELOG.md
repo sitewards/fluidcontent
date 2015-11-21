@@ -1,7 +1,15 @@
 # Fluidcontent Change log
 
-upcoming
+4.4.0 - 2015-11-21
 ------------------
+
+[#316](https://github.com/FluidTYPO3/fluidcontent/pull/316) Feature to specify default (non-Flux) column values which will be added to `defValues` array when creating new instances of fluidcontent templates
+
+- Content type selector switched to TCA manipulation feature from Flux
+  - [Old content selector based on user function removed](https://github.com/FluidTYPO3/fluidcontent/commit/026a44898a747780feed7cfd2678b5902f33b34c
+  - [New selector values generated from Forms instances](https://github.com/FluidTYPO3/fluidcontent/commit/a03af543cd8183488b973428a9224aece8de0d44)
+
+- [SVG icon support for TYPO3 7.6](https://github.com/FluidTYPO3/fluidcontent/commit/d08c0f1b40b607a3c1653ddbb48953619ca45d18)
 
 - :exclamation: Support of [TYPO3 6.2 dropped](https://github.com/FluidTYPO3/fluidcontent/commit/f1df9a4b7ee563335c8f1feeb7925e6f820a7f19)
 	- As result, [legacy code removed](https://github.com/FluidTYPO3/fluidcontent/pull/313)
