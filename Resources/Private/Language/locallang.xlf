@@ -6,6 +6,12 @@
 			<trans-unit id="default">
 				<source>default</source>
 			</trans-unit>
+			<trans-unit id="be_groups.tx_fluidcontent_allowedfluidcontent">
+				<source>Allowed fluidcontent types</source>
+			</trans-unit>
+			<trans-unit id="be_groups.tx_fluidcontent_deniedfluidcontent">
+				<source>Denied fluidcontent types</source>
+			</trans-unit>
 			<trans-unit id="pages.no_content_types">
 				<source>No available content types</source>
 			</trans-unit>

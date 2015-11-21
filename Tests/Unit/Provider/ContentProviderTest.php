@@ -9,6 +9,9 @@ namespace FluidTYPO3\Fluidcontent\Tests\Unit\Provider;
  */
 
 use FluidTYPO3\Fluidcontent\Provider\ContentProvider;
+use FluidTYPO3\Flux\Configuration\BackendConfigurationManager;
+use FluidTYPO3\Flux\Service\FluxService;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -24,7 +27,7 @@ class ContentProviderTest extends UnitTestCase {
 	protected function createProviderInstance() {
 		$GLOBALS['TYPO3_DB'] = $this->getMock(
 			'TYPO3\\CMS\\Core\\Database\\DatabaseConnection',
-			array('prepare_SELECTquery'),
+			array('prepare_SELECTquery', 'exec_SELECTgetSingleRow', 'exec_SELECTgetRows', 'exec_SELECTquery'),
 			array(), '', FALSE
 		);
 		$preparedStatementMock = $this->getMock(
@@ -64,6 +67,7 @@ class ContentProviderTest extends UnitTestCase {
 	 * @param string $expected
 	 */
 	public function testGetTemplatePathAndFilename(array $record, $expected) {
+		$GLOBALS['TYPO3_LOADED_EXT'] = array();
 		$instance = $this->createProviderInstance();
 		$result = $instance->getTemplatePathAndFilename($record);
 		$this->assertEquals($expected, $result);
