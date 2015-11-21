@@ -10,6 +10,7 @@ namespace FluidTYPO3\Fluidcontent\Tests\Unit\Controller;
 
 use FluidTYPO3\Fluidcontent\Controller\ContentController;
 use FluidTYPO3\Flux\Configuration\ConfigurationManager;
+use TYPO3\CMS\Core\Database\DatabaseConnection;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\View\StandaloneView;
@@ -19,13 +20,8 @@ use TYPO3\CMS\Fluid\View\StandaloneView;
  */
 class ContentControllerTest extends UnitTestCase {
 
-	public function testCreatesInstance() {
-		$instance = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
-			->get('FluidTYPO3\\Fluidcontent\\Controller\\ContentController');
-		$this->assertInstanceOf('FluidTYPO3\\Fluidcontent\\Controller\\ContentController', $instance);
-	}
-
 	public function testInitializeView() {
+
 		/** @var ContentController|\PHPUnit_Framework_MockObject_MockObject $instance */
 		$instance = $this->getMock(
 			'FluidTYPO3\\Fluidcontent\\Controller\\ContentController',

@@ -8,13 +8,16 @@ namespace FluidTYPO3\Fluidcontent\Provider;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Fluidcontent\Backend\ContentTypeFilter;
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
 use FluidTYPO3\Flux\Form;
 use FluidTYPO3\Flux\Provider\ContentProvider as FluxContentProvider;
 use FluidTYPO3\Flux\Provider\ProviderInterface;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
+use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use FluidTYPO3\Flux\Utility\PathUtility;
 use FluidTYPO3\Flux\View\TemplatePaths;
+use TYPO3\CMS\Backend\Utility\BackendUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 
@@ -77,6 +80,46 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 */
 	public function injectContentConfigurationService(ConfigurationService $configurationService) {
 		$this->contentConfigurationService = $configurationService;
+	}
+
+	/**
+	 * @param array $items
+	 * @return ContentTypeFilter
+	 */
+	protected function getContentTypeFilter(array $items) {
+		return new ContentTypeFilter($items);
+	}
+
+	/**
+	 * @param array $record
+	 * @param array $configuration
+	 * @return array
+	 */
+	public function processTableConfiguration(array $row, array $configuration) {
+		if ($row['CType'] === $this->contentObjectType) {
+			// Create values for the fluidcontent type selector
+			$configuration['processedTca']['columns']['tx_fed_fcefile']['config']['items'] = array_merge(
+				$configuration['processedTca']['columns']['tx_fed_fcefile']['config']['items'],
+				$this->contentConfigurationService->getContentTypeSelectorItems()
+			);
+
+			// Filter by which fluidcontent types are allowed by backend user group
+			$configuration['processedTca']['columns']['tx_fed_fcefile']['config']['items'] = $this->getContentTypeFilter(
+				$configuration['processedTca']['columns']['tx_fed_fcefile']['config']['items']
+			)->filterItemsByGroupAccess();
+
+			// Filter by which fluidcontent types are allowed by content area, if element is nested
+			if (!empty($row['tx_flux_parent']) && !empty($row['tx_flux_column'])) {
+				$filter = $this->getContentTypeFilter($configuration['processedTca']['columns']['tx_fed_fcefile']['config']['items']);
+				$configuration['processedTca']['columns']['tx_fed_fcefile']['config']['items'] = $this->getContentTypeFilter(
+					$configuration['processedTca']['columns']['tx_fed_fcefile']['config']['items']
+				)->filterItemsByGridColumn(
+					$this->getGrid($this->recordService->getSingle('tt_content', '*', (integer) $row['tx_flux_parent'])),
+					$row['tx_flux_column']
+				);
+			}
+		}
+		return $configuration;
 	}
 
 	/**
@@ -206,7 +249,6 @@ class ContentProvider extends FluxContentProvider implements ProviderInterface {
 	 * @return array
 	 */
 	public function getPreview(array $row) {
-
 		if ($this->contentObjectType !== $row['CType']) {
 			return array(NULL, NULL, TRUE);
 		}
