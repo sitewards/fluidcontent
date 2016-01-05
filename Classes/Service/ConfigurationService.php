@@ -281,7 +281,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 				if (TRUE === empty($group)) {
 					$group = 'Content';
 				}
-				$tabId = $this->sanitizeString($group);
+				$tabId = 'group_' . $this->sanitizeString($group);
 				$wizardTabs[$tabId]['title'] = LocalizationUtility::translate('fluidcontent.newContentWizard.group.' . $group, ExtensionNamingUtility::getExtensionKey($extensionKey));
 				if ($wizardTabs[$tabId]['title'] === NULL) {
 					$coreTranslationReference = 'LLL:EXT:backend/Resources/Private/Language/locallang_db_new_content_el.xlf:' . $group;
@@ -476,8 +476,9 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 */
 	protected function sanitizeString($string) {
 		$pattern = '/([^a-z0-9\-]){1,}/i';
-		$string = preg_replace($pattern, '-', $string);
-		return trim($string, '-');
+		$replaced = preg_replace($pattern, '_', $string);
+		$replaced = trim($replaced, '_');
+		return empty($replaced) ? md5($string) : $replaced;
 	}
 
 	/**
