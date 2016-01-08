@@ -20,6 +20,7 @@ $contentSelector = 'FluidTYPO3\Fluidcontent\Backend\ContentSelector->renderField
 	),
 ));
 
+$GLOBALS['TCA']['tt_content']['ctrl']['requestUpdate'] .= ',tx_fed_fcefile';
 $GLOBALS['TCA']['tt_content']['types']['fluidcontent_content']['showitem'] = '
                 --palette--;LLL:EXT:cms/locallang_ttc.xlf:palette.general;general,
                 --palette--;LLL:EXT:cms/locallang_ttc.xlf:palette.headers;headers,
