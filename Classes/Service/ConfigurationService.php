@@ -281,7 +281,8 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 				if (TRUE === empty($group)) {
 					$group = 'Content';
 				}
-				$tabId = 'group_' . $this->sanitizeString($group);
+				$sanitizedGroup = $this->sanitizeString($group);
+				$tabId = $group === $sanitizedGroup ? $group : 'group_' . $sanitizedGroup;
 				$wizardTabs[$tabId]['title'] = LocalizationUtility::translate('fluidcontent.newContentWizard.group.' . $group, ExtensionNamingUtility::getExtensionKey($extensionKey));
 				if ($wizardTabs[$tabId]['title'] === NULL) {
 					$coreTranslationReference = 'LLL:EXT:backend/Resources/Private/Language/locallang_db_new_content_el.xlf:' . $group;
