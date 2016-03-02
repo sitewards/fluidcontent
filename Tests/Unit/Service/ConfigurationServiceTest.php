@@ -127,7 +127,7 @@ class ConfigurationServiceTest extends UnitTestCase {
 	 */
 	public function getSanitizeStringTestValues() {
 		return array(
-			array('foo bar', 'foo-bar')
+			array('foo bar', 'foo_bar')
 		);
 	}
 

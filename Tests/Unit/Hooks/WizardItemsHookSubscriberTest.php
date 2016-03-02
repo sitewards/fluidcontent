@@ -16,6 +16,7 @@ use FluidTYPO3\Flux\Form\Container\Row;
 use FluidTYPO3\Flux\Provider\Provider;
 use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController;
+use TYPO3\CMS\Core\Authentication\BackendUserAuthentication;
 use TYPO3\CMS\Core\Tests\UnitTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -54,6 +55,7 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 	 */
 	public function processesWizardItems($items, $whitelist, $blacklist, $expectedList) {
 		$GLOBALS['LOCAL_LANG'] = new \stdClass();
+		$GLOBALS['BE_USER'] = new BackendUserAuthentication();
 		$objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		/** @var WizardItemsHookSubscriber $instance */
 		$instance = $objectManager->get('FluidTYPO3\\Fluidcontent\\Hooks\\WizardItemsHookSubscriber');
@@ -143,6 +145,7 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 	}
 
 	public function testManipulateWizardItemsCallsExpectedMethodSequenceWithoutProviders() {
+		$GLOBALS['BE_USER'] = new BackendUserAuthentication();
 		/** @var WizardItemsHookSubscriber $instance */
 		$instance = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
 			->get('FluidTYPO3\\Fluidcontent\\Hooks\\WizardItemsHookSubscriber');
@@ -167,6 +170,7 @@ class WizardItemsHookSubscriberTest extends UnitTestCase {
 	}
 
 	public function testManipulateWizardItemsCallsExpectedMethodSequenceWithProvidersWithColPosWithoutRelativeElement() {
+		$GLOBALS['BE_USER'] = new BackendUserAuthentication();
 		/** @var WizardItemsHookSubscriber $instance */
 		$instance = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager')
 			->get('FluidTYPO3\\Fluidcontent\\Hooks\\WizardItemsHookSubscriber');

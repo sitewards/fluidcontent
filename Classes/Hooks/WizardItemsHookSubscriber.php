@@ -8,6 +8,7 @@ namespace FluidTYPO3\Fluidcontent\Hooks;
  * LICENSE.md file that was distributed with this source code.
  */
 
+use FluidTYPO3\Fluidcontent\Backend\ContentTypeFilter;
 use FluidTYPO3\Fluidcontent\Service\ConfigurationService;
 use FluidTYPO3\Flux\Form\FormInterface;
 use FluidTYPO3\Flux\Hooks\WizardItemsHookSubscriber as FluxWizardItemsHookSubscriber;
@@ -37,12 +38,27 @@ class WizardItemsHookSubscriber extends FluxWizardItemsHookSubscriber implements
 
 	/**
 	 * @param array $items
-	 * @param NewContentElementController $parentObject
+	 * @param \TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController $parentObject
 	 * @return void
 	 */
 	public function manipulateWizardItems(&$items, &$parentObject) {
 		$this->configurationService->writeCachedConfigurationIfMissing();
 		$items = $this->filterPermittedFluidContentTypesByInsertionPosition($items, $parentObject);
+		$items = $this->filterPermittedFluidContentTypesByUserGroupAccessList($items, $parentObject);
+	}
+
+	/**
+	 * @param array $items
+	 * @param \TYPO3\CMS\Backend\Controller\ContentElement\NewContentElementController $parentObject
+	 * @return array
+	 */
+	protected function filterPermittedFluidContentTypesByUserGroupAccessList(array $items, $parentObject) {
+		$filter = $this->getContentTypeFilter((array) $GLOBALS['TCA']['tt_content']['columns']['tx_fed_fcefile']['config']['items']);
+		list ($blacklist, $whitelist) = $filter->extractBlacklistAndWhitelistFromCurrentBackendUser();
+		// Filter by which fluidcontent types are allowed by backend user group
+		$items = $this->applyWhitelist($items, (array) $whitelist);
+		$items = $this->applyBlacklist($items, (array) $blacklist);
+		return $items;
 	}
 
 	/**
@@ -98,4 +114,13 @@ class WizardItemsHookSubscriber extends FluxWizardItemsHookSubscriber implements
 		}
 		return array($whitelist, $blacklist);
 	}
+
+	/**
+	 * @param array $items
+	 * @return ContentTypeFilter
+	 */
+	protected function getContentTypeFilter(array $items) {
+		return new ContentTypeFilter($items);
+	}
+
 }
