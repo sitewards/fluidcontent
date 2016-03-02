@@ -1,9 +1,27 @@
 # Fluidcontent Change log
 
+4.4.1 - 2016-03-02
+------------------
+
+- Fixed issue with selecting multiple items in ACL
+  - [Source commit with more info](https://github.com/FluidTYPO3/fluidcontent/commit/be1432be1e74740285aad85d868e142e629257d4)
+  - [Secondary issue applying ACL to fluidcontent type selector](https://github.com/FluidTYPO3/fluidcontent/commit/0ecddd40fa71cd7f224eec2c9751f30fc7278bf8)
+  
+- Do not apply extension configuration in install tool
+  - [Source commit with more info](https://github.com/FluidTYPO3/fluidcontent/commit/76e3952fb965e348cf95151586e800acbea64047)
+  - [Follow-up to enable cache definition](https://github.com/FluidTYPO3/fluidcontent/commit/af6014bfc744b7e26c695e058a12fff911e5d80e)
+  
+- Handle non-ASCII names of elements
+  - [Source commit with more info](https://github.com/FluidTYPO3/fluidcontent/commit/59102598fe1930e147fb4f48029e17346feeff6f)
+  
+- [#332](https://github.com/FluidTYPO3/fluidcontent/pull/332) Reload form when changing fluidcontent type
+
+- [#337](https://github.com/FluidTYPO3/fluidcontent/pull/337) Fixed issue with using "common" group for elements
+
 4.4.0 - 2015-11-21
 ------------------
 
-[#316](https://github.com/FluidTYPO3/fluidcontent/pull/316) Feature to specify default (non-Flux) column values which will be added to `defValues` array when creating new instances of fluidcontent templates
+- [#316](https://github.com/FluidTYPO3/fluidcontent/pull/316) Feature to specify default (non-Flux) column values which will be added to `defValues` array when creating new instances of fluidcontent templates
 
 - Content type selector switched to TCA manipulation feature from Flux
   - [Old content selector based on user function removed](https://github.com/FluidTYPO3/fluidcontent/commit/026a44898a747780feed7cfd2678b5902f33b34c
