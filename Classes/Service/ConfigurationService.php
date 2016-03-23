@@ -18,6 +18,7 @@ use FluidTYPO3\Flux\Service\WorkspacesAwareRecordService;
 use FluidTYPO3\Flux\Utility\ExtensionNamingUtility;
 use FluidTYPO3\Flux\Utility\MiscellaneousUtility;
 use TYPO3\CMS\Core\Cache\CacheManager;
+use TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException;
 use TYPO3\CMS\Core\Cache\Frontend\StringFrontend;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -165,7 +166,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 		$pageTsConfig = '';
 		try {
 			$collection = $this->getContentConfiguration();
-			$wizardTabs = $this->buildAllWizardTabGroups($collection);
+			$wizardTabs = $this->buildAllWizardTabGroupsCached($collection);
 			$collectionPageTsConfig = $this->buildAllWizardTabsPageTsConfig($wizardTabs);
 			$pageTsConfig .= '[PIDinRootline = ' . strval($pageUid) . ']' . LF;
 			$pageTsConfig .= $collectionPageTsConfig . LF;
@@ -220,6 +221,33 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	}
 
 	/**
+	 * Wraps buildAllWizardTabGroups method into caching handler.
+	 * We need caching here because buildAllWizardTabGroups method complexity is O(p*n) where
+	 *  - p is number of pages in the system
+	 *  - n is number of fluid content elements in the system.
+	 *
+	 * @see buildAllWizardTabGroups
+	 *
+	 * @param array $allTemplatePaths
+	 * @return array
+	 */
+	protected function buildAllWizardTabGroupsCached(array $allTemplatePaths) {
+		try {
+			$cache = $this->manager->getCache('fluidcontent');
+		} catch (\TYPO3\CMS\Core\Cache\Exception\NoSuchCacheException $exception) {
+			return $this->buildAllWizardTabGroups($allTemplatePaths);
+		}
+
+		$cacheKey = 'wizardtabs_' . md5(serialize($allTemplatePaths));
+
+		if (!$cache->has($cacheKey)) {
+			$cache->set($cacheKey, $this->buildAllWizardTabGroups($allTemplatePaths), array(), 86400);
+		}
+
+		return $cache->get($cacheKey);
+	}
+
+	/**
 	 * Scans all folders in $allTemplatePaths for template
 	 * files, reads information about each file and collects
 	 * the groups of files into groups of pageTSconfig setup.
@@ -227,7 +255,7 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	 * @param array $allTemplatePaths
 	 * @return array
 	 */
-	protected function buildAllWizardTabGroups($allTemplatePaths) {
+	protected function buildAllWizardTabGroups(array $allTemplatePaths) {
 		$wizardTabs = array();
 		$forms = $this->getContentElementFormInstances();
 		foreach ($forms as $extensionKey => $formSet) {
@@ -393,3 +421,4 @@ class ConfigurationService extends FluxService implements SingletonInterface {
 	}
 
 }
+

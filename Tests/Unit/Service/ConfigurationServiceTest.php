@@ -181,14 +181,14 @@ class ConfigurationServiceTest extends UnitTestCase {
 			array(
 				'overrideCurrentPageUidForConfigurationManager',
 				'getContentConfiguration',
-				'buildAllWizardTabGroups',
+				'buildAllWizardTabGroupsCached',
 				'buildAllWizardTabsPageTsConfig',
 				'message'
 			)
 		);
 		$instance->expects($this->at(0))->method('overrideCurrentPageUidForConfigurationManager')->with($pageUid);
 		$instance->expects($this->at(1))->method('getContentConfiguration')->willReturn(array('foo' => 'bar'));
-		$instance->expects($this->at(2))->method('buildAllWizardTabGroups')->with(array('foo' => 'bar'))->willReturn(array());
+		$instance->expects($this->at(2))->method('buildAllWizardTabGroupsCached')->with(array('foo' => 'bar'))->willReturn(array());
 		$instance->expects($this->at(3))->method('buildAllWizardTabsPageTsConfig')->with(array())->willReturn('targetmarker');
 		$instance->expects($this->at(4))->method('message');
 		$result = $this->callInaccessibleMethod($instance, 'renderPageTypoScriptForPageUid', $pageUid);
@@ -238,3 +238,4 @@ class ConfigurationServiceTest extends UnitTestCase {
 	}
 
 }
+
